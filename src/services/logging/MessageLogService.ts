@@ -17,6 +17,6 @@ export class MessageLogService {
             message: message.content,
             date: message.createdAt,
         };
-        this.repo.CreateAudit(audit);
+        this.repo.CreateLog(audit);
     }
 }

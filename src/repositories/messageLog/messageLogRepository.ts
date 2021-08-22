@@ -15,7 +15,7 @@ export default class LogRepository extends MongoBase<MessageLog> {
      * @param audit Audit Object to be posted to Mongo
      * @returns  Promise<MessageLog & Document<any, any, MessageLog>>
      */
-    public async CreateAudit(audit: MessageLog): Promise<MessageLog & Document<any, any, MessageLog>> {
+    public async CreateLog(audit: MessageLog): Promise<MessageLog & Document<any, any, MessageLog>> {
         try {
             return await this.create(audit);
         } catch (error) {
