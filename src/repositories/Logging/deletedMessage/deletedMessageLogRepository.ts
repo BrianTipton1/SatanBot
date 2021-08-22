@@ -1,21 +1,21 @@
 import MongoBase from '../../mongoBase';
-import editedMessageQuerybyId from './editedMessageLogQuery';
 import { Document, UpdateWriteOpResult } from 'mongoose';
 import { injectable } from 'inversify';
-import EditedMessageLogModel from '../../../domain/Logging/Messaging/editedMessage/editedMessageLogModel';
-import EditedMessageLog from '../../../domain/Logging/Messaging/editedMessage/editedMessageLog';
+import DeletedMessageLog from '../../../domain/Logging/Messaging/deletedMessage/deletedMessageLog';
+import DeletedMessageLogModel from '../../../domain/Logging/Messaging/deletedMessage/deletedMessageLogModel';
+import deletedMessageQuerybyId from './deletedMessageLogQuery';
 
 @injectable()
-export default class EditedMessageLogRepository extends MongoBase<EditedMessageLog> {
+export default class DeletedMessageLogRepository extends MongoBase<DeletedMessageLog> {
     constructor() {
-        super(EditedMessageLogModel);
+        super(DeletedMessageLogModel);
     }
     /**
      *
      * @param log Audit Object to be posted to Mongo
-     * @returns  Promise<EditedMessageLog & Document<any, any, EditedMessageLog>>
+     * @returns  Promise<DeletedMessageLog & Document<any, any, DeletedMessageLog>>
      */
-    public async CreateLog(log: EditedMessageLog): Promise<EditedMessageLog & Document<any, any, EditedMessageLog>> {
+    public async CreateLog(log: DeletedMessageLog): Promise<DeletedMessageLog & Document<any, any, DeletedMessageLog>> {
         try {
             return await this.create(log);
         } catch (error) {
@@ -25,9 +25,9 @@ export default class EditedMessageLogRepository extends MongoBase<EditedMessageL
     /**
      *
      * @param id Id of the Audit to get
-     * @returns Promise<(EditedMessageLog & Document<any, any, EditedMessageLog>) | null>
+     * @returns Promise<(DeletedMessageLog & Document<any, any, DeletedMessageLog>) | null>
      */
-    public async GetLog(id: string): Promise<(EditedMessageLog & Document<any, any, EditedMessageLog>) | null> {
+    public async GetLog(id: string): Promise<(DeletedMessageLog & Document<any, any, DeletedMessageLog>) | null> {
         try {
             return await this.getById(id);
         } catch (error) {
@@ -40,8 +40,8 @@ export default class EditedMessageLogRepository extends MongoBase<EditedMessageL
      * @param log Updated Audit Object
      * @returns  Promise<UpdateWriteOpResult>
      */
-    public async UpdateLogById(id: string, log: EditedMessageLog): Promise<UpdateWriteOpResult> {
-        const query: editedMessageQuerybyId = {
+    public async UpdateLogById(id: string, log: DeletedMessageLog): Promise<UpdateWriteOpResult> {
+        const query: deletedMessageQuerybyId = {
             _id: this.toObjectId(id),
         };
         try {

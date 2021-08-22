@@ -9,4 +9,6 @@ export const TYPES = {
     NewMessageLogRepository: Symbol('NewMessageLogRepository'),
     EditedMessageLogRepository: Symbol('EditedMessageLogRepository'),
     EditedMessageLogService: Symbol('EditedMessageLogService'),
+    DeletedMessageLogRepository: Symbol('DeletedMessageLogRepository'),
+    DeletedMessageLogService: Symbol('DeletedMessageLogService'),
 };

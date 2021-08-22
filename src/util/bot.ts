@@ -2,6 +2,7 @@ import { Client, Message } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { MessageService } from '../services/message/messageService';
+import DeletedMessageLog from '../domain/Logging/Messaging/deletedMessage/deletedMessageLog';
 
 @injectable()
 export class Bot {
@@ -31,6 +32,7 @@ export class Bot {
             try {
                 this.messageService.handleNewMessage(message);
             } catch (error) {
+                console.log(error);
                 throw new Error('Error on message creation');
             }
         });
@@ -38,7 +40,16 @@ export class Bot {
             try {
                 this.messageService.handleUpdatedMessage(oldMessage, newMessage);
             } catch (error) {
+                console.log(error);
                 throw new Error('Error on message update');
+            }
+        });
+        this.client.on('messageDelete', (message: Message) => {
+            try {
+                this.messageService.handleDeletedMessage(message);
+            } catch (error) {
+                console.log(error);
+                throw new Error('Error on message delete');
             }
         });
 

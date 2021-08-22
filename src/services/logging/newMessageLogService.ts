@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import NewMessageLog from '../../domain/Logging/newMessage/newMessageLog';
+import NewMessageLog from '../../domain/Logging/Messaging/newMessage/newMessageLog';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
 import NewMessageLogRepository from '../../repositories/Logging/newMessage/newMessageLogRepository';
@@ -11,7 +11,7 @@ export class NewMessageLogService {
      * create
      */
     public create(message: Message): void {
-        const audit: NewMessageLog = {
+        const log: NewMessageLog = {
             userName: message.author.username,
             userId: message.author.id,
             channelId: message.channelId,
@@ -19,6 +19,6 @@ export class NewMessageLogService {
             message: message.content,
             date: message.createdAt,
         };
-        this.newMessageRepo.CreateLog(audit);
+        this.newMessageRepo.CreateLog(log);
     }
 }
