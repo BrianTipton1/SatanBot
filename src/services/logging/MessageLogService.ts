@@ -1,12 +1,12 @@
 import { Message } from 'discord.js';
 import MessageLog from '../../domain/messageLogging/messageLog';
 import { inject, injectable } from 'inversify';
-import MessageAuditRepository from '../../repositories/messageLog/MessageAuditRepository';
+import MessageLogRepository from '../../repositories/messageLog/messageLogRepository';
 import { TYPES } from '../../types';
 
 @injectable()
-export class MessageAuditService {
-    constructor(@inject(TYPES.MessageAuditRepository) private repo: MessageAuditRepository) {}
+export class MessageLogService {
+    constructor(@inject(TYPES.MessageLogRepository) private repo: MessageLogRepository) {}
     /**
      * create
      */

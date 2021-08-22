@@ -6,7 +6,7 @@ import MessageLog from '../../domain/messageLogging/messageLog';
 import MessageLogModel from '../../domain/messageLogging/messageLogModel';
 
 @injectable()
-export default class AuditRepository extends MongoBase<MessageLog> {
+export default class LogRepository extends MongoBase<MessageLog> {
     constructor() {
         super(MessageLogModel);
     }

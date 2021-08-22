@@ -2,17 +2,17 @@ import { Message } from 'discord.js';
 import { PingFinder } from '../ping-finder';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
-import { MessageAuditService } from '../logging/MessageAuditService';
+import { MessageLogService } from '../logging/MessageLogService';
 
 @injectable()
 export class MessageService {
-    private messageAuditService: MessageAuditService;
+    private messageLogService: MessageLogService;
 
-    constructor(@inject(TYPES.MessageAuditService) messageAuditService: MessageAuditService) {
-        this.messageAuditService = messageAuditService;
+    constructor(@inject(TYPES.MessageLogService) messageLogService: MessageLogService) {
+        this.messageLogService = messageLogService;
     }
 
     async handle(message: Message) {
-        this.messageAuditService.create(message);
+        this.messageLogService.create(message);
     }
 }

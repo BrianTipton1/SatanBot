@@ -4,10 +4,9 @@ import { TYPES } from './types';
 import { Client, Intents } from 'discord.js';
 import { Bot } from './util/bot';
 import { MessageService } from './services/message/messageService';
-import { PingFinder } from './services/ping-finder';
 import MongoAccess from './repositories/mongoConnect';
-import { MessageAuditService } from './services/logging/MessageAuditService';
-import MessageAuditRepository from './repositories/messageLog/MessageAuditRepository';
+import { MessageLogService } from './services/logging/MessageLogService';
+import MessageLogRepository from './repositories/messageLog/messageLogRepository';
 
 let container = new Container();
 
@@ -19,6 +18,6 @@ container.bind<MongoAccess>(TYPES.MongoAccess).to(MongoAccess).inSingletonScope(
 container.bind<string>(TYPES.Token).toConstantValue(process.env.TOKEN);
 container.bind<string>(TYPES.MongoConnectionString).toConstantValue(process.env.MONGO_CONNECTION_STRING);
 container.bind<MessageService>(TYPES.MessageService).to(MessageService).inSingletonScope();
-container.bind<MessageAuditService>(TYPES.MessageAuditService).to(MessageAuditService).inSingletonScope();
-container.bind<MessageAuditRepository>(TYPES.MessageAuditRepository).to(MessageAuditRepository).inSingletonScope();
+container.bind<MessageLogService>(TYPES.MessageLogService).to(MessageLogService).inSingletonScope();
+container.bind<MessageLogRepository>(TYPES.MessageLogRepository).to(MessageLogRepository).inSingletonScope();
 export default container;
