@@ -5,12 +5,12 @@ import { Client, Intents } from 'discord.js';
 import { Bot } from './util/bot';
 import { MessageService } from './services/message/messageService';
 import MongoAccess from './repositories/mongoConnect';
-import { NewMessageLogService } from './services/logging/newMessageLogService';
-import NewMessageLogRepository from './repositories/Logging/newMessage/newMessageLogRepository';
-import EditedMessageLogRepository from './repositories/Logging/editedMessage/editedMessageLogRepository';
-import { EditedMessageLogService } from './services/logging/editedMessageLogService';
-import DeletedMessageLogRepository from './repositories/Logging/deletedMessage/deletedMessageLogRepository';
-import { DeletedMessageLogService } from './services/logging/deletedMessageLogService';
+import { NewMessageLogService } from './services/logging/messaging/newMessageLogService';
+import NewMessageLogRepository from './repositories/Logging/messaging/newMessage/newMessageLogRepository';
+import EditedMessageLogRepository from './repositories/Logging/messaging/editedMessage/editedMessageLogRepository';
+import { EditedMessageLogService } from './services/logging/messaging/editedMessageLogService';
+import DeletedMessageLogRepository from './repositories/Logging/messaging/deletedMessage/deletedMessageLogRepository';
+import { DeletedMessageLogService } from './services/logging/messaging/deletedMessageLogService';
 
 let container = new Container();
 

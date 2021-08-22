@@ -1,8 +1,8 @@
-import MongoBase from '../../mongoBase';
+import MongoBase from '../../../mongoBase';
 import { Document, UpdateWriteOpResult } from 'mongoose';
 import { injectable } from 'inversify';
-import DeletedMessageLog from '../../../domain/Logging/Messaging/deletedMessage/deletedMessageLog';
-import DeletedMessageLogModel from '../../../domain/Logging/Messaging/deletedMessage/deletedMessageLogModel';
+import DeletedMessageLog from '../../../../domain/Logging/Messaging/deletedMessage/deletedMessageLog';
+import DeletedMessageLogModel from '../../../../domain/Logging/Messaging/deletedMessage/deletedMessageLogModel';
 import deletedMessageQuerybyId from './deletedMessageLogQuery';
 
 @injectable()

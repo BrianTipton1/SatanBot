@@ -1,8 +1,8 @@
 import { Message } from 'discord.js';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../../types';
-import DeletedMessageLog from '../../domain/Logging/Messaging/deletedMessage/deletedMessageLog';
-import DeletedMessageLogRepository from '../../repositories/Logging/deletedMessage/deletedMessageLogRepository';
+import { TYPES } from '../../../types';
+import DeletedMessageLog from '../../../domain/Logging/Messaging/deletedMessage/deletedMessageLog';
+import DeletedMessageLogRepository from '../../../repositories/Logging/messaging/deletedMessage/deletedMessageLogRepository';
 
 @injectable()
 export class DeletedMessageLogService {

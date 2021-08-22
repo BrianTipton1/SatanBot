@@ -2,9 +2,9 @@ import { Message } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import DeletedMessageLog from '../../domain/Logging/Messaging/deletedMessage/deletedMessageLog';
 import { TYPES } from '../../types';
-import { DeletedMessageLogService } from '../logging/deletedMessageLogService';
-import { EditedMessageLogService } from '../logging/editedMessageLogService';
-import { NewMessageLogService } from '../logging/newMessageLogService';
+import { DeletedMessageLogService } from '../logging/messaging/deletedMessageLogService';
+import { EditedMessageLogService } from '../logging/messaging/editedMessageLogService';
+import { NewMessageLogService } from '../logging/messaging/newMessageLogService';
 
 @injectable()
 export class MessageService {

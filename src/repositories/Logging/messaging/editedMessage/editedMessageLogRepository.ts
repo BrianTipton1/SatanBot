@@ -1,21 +1,21 @@
-import MongoBase from '../../mongoBase';
-import newMessageQuerybyId from './newMessageLogQuery';
+import MongoBase from '../../../mongoBase';
+import editedMessageQuerybyId from './editedMessageLogQuery';
 import { Document, UpdateWriteOpResult } from 'mongoose';
 import { injectable } from 'inversify';
-import NewMessageLog from '../../../domain/Logging/Messaging/newMessage/newMessageLog';
-import NewMessageLogModel from '../../../domain/Logging/Messaging/newMessage/newMessageLogModel';
+import EditedMessageLogModel from '../../../../domain/Logging/Messaging/editedMessage/editedMessageLogModel';
+import EditedMessageLog from '../../../../domain/Logging/Messaging/editedMessage/editedMessageLog';
 
 @injectable()
-export default class NewMessageLogRepository extends MongoBase<NewMessageLog> {
+export default class EditedMessageLogRepository extends MongoBase<EditedMessageLog> {
     constructor() {
-        super(NewMessageLogModel);
+        super(EditedMessageLogModel);
     }
     /**
      *
      * @param log Audit Object to be posted to Mongo
-     * @returns  Promise<MessageLog & Document<any, any, MessageLog>>
+     * @returns  Promise<EditedMessageLog & Document<any, any, EditedMessageLog>>
      */
-    public async CreateLog(log: NewMessageLog): Promise<NewMessageLog & Document<any, any, NewMessageLog>> {
+    public async CreateLog(log: EditedMessageLog): Promise<EditedMessageLog & Document<any, any, EditedMessageLog>> {
         try {
             return await this.create(log);
         } catch (error) {
@@ -25,9 +25,9 @@ export default class NewMessageLogRepository extends MongoBase<NewMessageLog> {
     /**
      *
      * @param id Id of the Audit to get
-     * @returns Promise<(MessageLog & Document<any, any, MessageLog>) | null>
+     * @returns Promise<(EditedMessageLog & Document<any, any, EditedMessageLog>) | null>
      */
-    public async GetLog(id: string): Promise<(NewMessageLog & Document<any, any, NewMessageLog>) | null> {
+    public async GetLog(id: string): Promise<(EditedMessageLog & Document<any, any, EditedMessageLog>) | null> {
         try {
             return await this.getById(id);
         } catch (error) {
@@ -40,8 +40,8 @@ export default class NewMessageLogRepository extends MongoBase<NewMessageLog> {
      * @param log Updated Audit Object
      * @returns  Promise<UpdateWriteOpResult>
      */
-    public async UpdateLogById(id: string, log: NewMessageLog): Promise<UpdateWriteOpResult> {
-        const query: newMessageQuerybyId = {
+    public async UpdateLogById(id: string, log: EditedMessageLog): Promise<UpdateWriteOpResult> {
+        const query: editedMessageQuerybyId = {
             _id: this.toObjectId(id),
         };
         try {
