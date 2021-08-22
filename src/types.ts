@@ -5,7 +5,6 @@ export const TYPES = {
     Token: Symbol('Token'),
     MongoConnectionString: Symbol('MongoConnectionString'),
     MessageService: Symbol('MessageService'),
-    PingFinder: Symbol('PingFinder'),
     MessageLogService: Symbol('MessageLogService'),
     MessageLogRepository: Symbol('MessageLogRepository'),
 };
