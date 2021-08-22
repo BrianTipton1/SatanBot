@@ -6,7 +6,7 @@ import NewMessageLog from '../../../domain/Logging/newMessage/newMessageLog';
 import NewMessageLogModel from '../../../domain/Logging/newMessage/newMessageLogModel';
 
 @injectable()
-export default class LogRepository extends MongoBase<NewMessageLog> {
+export default class NewMessageLogRepository extends MongoBase<NewMessageLog> {
     constructor() {
         super(NewMessageLogModel);
     }

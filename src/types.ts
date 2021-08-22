@@ -7,4 +7,6 @@ export const TYPES = {
     MessageService: Symbol('MessageService'),
     MessageLogService: Symbol('MessageLogService'),
     NewMessageLogRepository: Symbol('NewMessageLogRepository'),
+    EditedMessageLogRepository: Symbol('EditedMessageLogRepository'),
+    EditedMessageLogService: Symbol('EditedMessageLogService'),
 };

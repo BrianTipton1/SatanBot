@@ -1,17 +1,25 @@
 import { Message } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
-import { MessageLogService } from '../logging/MessageLogService';
+import { EditedMessageLogService } from '../logging/editedMessageLogService';
+import { NewMessageLogService } from '../logging/newMessageLogService';
 
 @injectable()
 export class MessageService {
-    private messageLogService: MessageLogService;
-
-    constructor(@inject(TYPES.MessageLogService) messageLogService: MessageLogService) {
-        this.messageLogService = messageLogService;
+    private newMessageLogService: NewMessageLogService;
+    private editedMessageLogService: EditedMessageLogService;
+    constructor(
+        @inject(TYPES.MessageLogService) newMessageLogService: NewMessageLogService,
+        @inject(TYPES.EditedMessageLogService) editedMessageLogService: EditedMessageLogService,
+    ) {
+        this.newMessageLogService = newMessageLogService;
+        this.editedMessageLogService = editedMessageLogService;
     }
 
-    async handle(message: Message) {
-        this.messageLogService.create(message);
+    async handleNewMessage(message: Message) {
+        this.newMessageLogService.create(message);
+    }
+    async handleUpdatedMessage(oldMessage: Message, newMessage: Message) {
+        this.editedMessageLogService.create(oldMessage, newMessage);
     }
 }

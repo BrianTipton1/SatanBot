@@ -7,7 +7,7 @@ import { MessageService } from '../services/message/messageService';
 export class Bot {
     private client: Client;
     private readonly token: string;
-    private messageResponder: MessageService;
+    private messageService: MessageService;
 
     constructor(
         @inject(TYPES.Client) client: Client,
@@ -16,7 +16,7 @@ export class Bot {
     ) {
         this.client = client;
         this.token = token;
-        this.messageResponder = messageResponder;
+        this.messageService = messageResponder;
     }
 
     public listen(): Promise<string> {
@@ -29,9 +29,16 @@ export class Bot {
             console.log('Message received! Contents: ', message.content);
 
             try {
-                this.messageResponder.handle(message);
+                this.messageService.handleNewMessage(message);
             } catch (error) {
-                console.log(error);
+                throw new Error('Error on message creation');
+            }
+        });
+        this.client.on('messageUpdate', (oldMessage: Message, newMessage: Message) => {
+            try {
+                this.messageService.handleUpdatedMessage(oldMessage, newMessage);
+            } catch (error) {
+                throw new Error('Error on message update');
             }
         });
 

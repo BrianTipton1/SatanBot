@@ -5,7 +5,7 @@ import { TYPES } from '../../types';
 import NewMessageLogRepository from '../../repositories/Logging/newMessage/newMessageLogRepository';
 
 @injectable()
-export class MessageLogService {
+export class NewMessageLogService {
     constructor(@inject(TYPES.NewMessageLogRepository) private newMessageRepo: NewMessageLogRepository) {}
     /**
      * create
