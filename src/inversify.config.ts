@@ -7,7 +7,7 @@ import { MessageService } from './services/message/messageService';
 import { PingFinder } from './services/ping-finder';
 import MongoAccess from './repositories/mongoConnect';
 import { MessageAuditService } from './services/logging/MessageAuditService';
-import MessageAuditRepository from './repositories/messageAudit/MessageAuditRepository';
+import MessageAuditRepository from './repositories/messageLog/MessageAuditRepository';
 
 let container = new Container();
 

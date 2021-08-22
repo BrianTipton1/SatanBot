@@ -1,21 +1,21 @@
 import MongoBase from '../mongoBase';
-import MessageAuditQuerybyId from './messageAuditQuery';
-import MessageAuditModel from '../../domain/messageAudit/messageAuditModel';
-import MessageAudit from '../../domain/messageAudit/messageAudit';
+import MessageAuditQuerybyId from './messageLogQuery';
 import { Document, UpdateWriteOpResult } from 'mongoose';
 import { injectable } from 'inversify';
+import MessageLog from '../../domain/messageLogging/messageLog';
+import MessageLogModel from '../../domain/messageLogging/messageLogModel';
 
 @injectable()
-export default class AuditRepository extends MongoBase<MessageAudit> {
+export default class AuditRepository extends MongoBase<MessageLog> {
     constructor() {
-        super(MessageAuditModel);
+        super(MessageLogModel);
     }
     /**
      *
      * @param audit Audit Object to be posted to Mongo
-     * @returns  Promise<MessageAudit & Document<any, any, MessageAudit>>
+     * @returns  Promise<MessageLog & Document<any, any, MessageLog>>
      */
-    public async CreateAudit(audit: MessageAudit): Promise<MessageAudit & Document<any, any, MessageAudit>> {
+    public async CreateAudit(audit: MessageLog): Promise<MessageLog & Document<any, any, MessageLog>> {
         try {
             return await this.create(audit);
         } catch (error) {
@@ -25,9 +25,9 @@ export default class AuditRepository extends MongoBase<MessageAudit> {
     /**
      *
      * @param id Id of the Audit to get
-     * @returns Promise<(MessageAudit & Document<any, any, MessageAudit>) | null>
+     * @returns Promise<(MessageLog & Document<any, any, MessageLog>) | null>
      */
-    public async GetAudit(id: string): Promise<(MessageAudit & Document<any, any, MessageAudit>) | null> {
+    public async GetAudit(id: string): Promise<(MessageLog & Document<any, any, MessageLog>) | null> {
         try {
             return await this.getById(id);
         } catch (error) {
@@ -40,7 +40,7 @@ export default class AuditRepository extends MongoBase<MessageAudit> {
      * @param audit Updated Audit Object
      * @returns  Promise<UpdateWriteOpResult>
      */
-    public async UpdateAuditById(id: string, audit: MessageAudit): Promise<UpdateWriteOpResult> {
+    public async UpdateAuditById(id: string, audit: MessageLog): Promise<UpdateWriteOpResult> {
         const query: MessageAuditQuerybyId = {
             _id: this.toObjectId(id),
         };

@@ -1,11 +1,10 @@
 import { Schema } from 'mongoose';
-import MessageAudit from './messageAudit';
+import MessageLog from './messageLog';
 
-const UserSchema = new Schema<MessageAudit>({
+const MessageLogSchema = new Schema<MessageLog>({
     user: { type: String, required: true },
     message: { type: String, required: true },
     date: { type: Date, required: true },
     userId: { type: String, required: true },
-    media: { type: Boolean, required: false },
 });
-export default UserSchema;
+export default MessageLogSchema;

@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
+import MessageLog from '../../domain/messageLogging/messageLog';
 import { inject, injectable } from 'inversify';
-import MessageAudit from '../../domain/messageAudit/messageAudit';
-import MessageAuditRepository from '../../repositories/messageAudit/MessageAuditRepository';
+import MessageAuditRepository from '../../repositories/messageLog/MessageAuditRepository';
 import { TYPES } from '../../types';
 
 @injectable()
@@ -11,7 +11,7 @@ export class MessageAuditService {
      * create
      */
     public create(message: Message): void {
-        const audit: MessageAudit = {
+        const audit: MessageLog = {
             user: message.author.username,
             userId: message.author.id,
             message: message.content,
