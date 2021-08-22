@@ -6,5 +6,5 @@ export const TYPES = {
     MongoConnectionString: Symbol('MongoConnectionString'),
     MessageService: Symbol('MessageService'),
     MessageLogService: Symbol('MessageLogService'),
-    MessageLogRepository: Symbol('MessageLogRepository'),
+    NewMessageLogRepository: Symbol('NewMessageLogRepository'),
 };

@@ -1,22 +1,24 @@
 import { Message } from 'discord.js';
-import MessageLog from '../../domain/messageLogging/messageLog';
+import NewMessageLog from '../../domain/Logging/newMessage/newMessageLog';
 import { inject, injectable } from 'inversify';
-import MessageLogRepository from '../../repositories/messageLog/messageLogRepository';
 import { TYPES } from '../../types';
+import NewMessageLogRepository from '../../repositories/Logging/newMessage/newMessageLogRepository';
 
 @injectable()
 export class MessageLogService {
-    constructor(@inject(TYPES.MessageLogRepository) private repo: MessageLogRepository) {}
+    constructor(@inject(TYPES.NewMessageLogRepository) private newMessageRepo: NewMessageLogRepository) {}
     /**
      * create
      */
     public create(message: Message): void {
-        const audit: MessageLog = {
-            user: message.author.username,
+        const audit: NewMessageLog = {
+            userName: message.author.username,
             userId: message.author.id,
+            channelId: message.channelId,
+            channelName: message.guild.channels.cache.get(message.channelId).name,
             message: message.content,
             date: message.createdAt,
         };
-        this.repo.CreateLog(audit);
+        this.newMessageRepo.CreateLog(audit);
     }
 }

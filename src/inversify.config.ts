@@ -6,7 +6,7 @@ import { Bot } from './util/bot';
 import { MessageService } from './services/message/messageService';
 import MongoAccess from './repositories/mongoConnect';
 import { MessageLogService } from './services/logging/MessageLogService';
-import MessageLogRepository from './repositories/messageLog/messageLogRepository';
+import NewMessageLogRepository from './repositories/Logging/newMessage/newMessageLogRepository';
 
 let container = new Container();
 
@@ -19,5 +19,5 @@ container.bind<string>(TYPES.Token).toConstantValue(process.env.TOKEN);
 container.bind<string>(TYPES.MongoConnectionString).toConstantValue(process.env.MONGO_CONNECTION_STRING);
 container.bind<MessageService>(TYPES.MessageService).to(MessageService).inSingletonScope();
 container.bind<MessageLogService>(TYPES.MessageLogService).to(MessageLogService).inSingletonScope();
-container.bind<MessageLogRepository>(TYPES.MessageLogRepository).to(MessageLogRepository).inSingletonScope();
+container.bind<NewMessageLogRepository>(TYPES.NewMessageLogRepository).to(NewMessageLogRepository).inSingletonScope();
 export default container;
