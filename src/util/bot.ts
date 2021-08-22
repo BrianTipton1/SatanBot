@@ -1,18 +1,18 @@
 import { Client, Message } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
-import { MessageResponder } from '../services/message-responder';
+import { MessageService } from '../services/message/messageService';
 
 @injectable()
 export class Bot {
     private client: Client;
     private readonly token: string;
-    private messageResponder: MessageResponder;
+    private messageResponder: MessageService;
 
     constructor(
         @inject(TYPES.Client) client: Client,
         @inject(TYPES.Token) token: string,
-        @inject(TYPES.MessageResponder) messageResponder: MessageResponder,
+        @inject(TYPES.MessageService) messageResponder: MessageService,
     ) {
         this.client = client;
         this.token = token;
@@ -20,7 +20,7 @@ export class Bot {
     }
 
     public listen(): Promise<string> {
-        this.client.on('message', (message: Message) => {
+        this.client.on('messageCreate', (message: Message) => {
             if (message.author.bot) {
                 console.log('Ignoring bot message!');
                 return;
@@ -28,14 +28,11 @@ export class Bot {
 
             console.log('Message received! Contents: ', message.content);
 
-            this.messageResponder
-                .handle(message)
-                .then(() => {
-                    console.log('Response sent!');
-                })
-                .catch(() => {
-                    console.log('Response not sent.');
-                });
+            try {
+                this.messageResponder.handle(message);
+            } catch (error) {
+                console.log(error);
+            }
         });
 
         return this.client.login(this.token);
