@@ -17,6 +17,7 @@
 	},
 	"scripts": {
 		"start": "node dist/app.js",
-		"build": "tsc"
+		"build": "tsc",
+		"flow": "tsc && node dist/app.js"
 	}
 }

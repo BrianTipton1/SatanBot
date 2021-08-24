@@ -11,4 +11,9 @@ export const TYPES = {
     EditedMessageLogService: Symbol('EditedMessageLogService'),
     DeletedMessageLogRepository: Symbol('DeletedMessageLogRepository'),
     DeletedMessageLogService: Symbol('DeletedMessageLogService'),
+    VoiceTimeRepository: Symbol('VoiceTimeRepository'),
+    VoiceStatusRepository: Symbol('VoiceStatusRepository'),
+    VoiceStatusService: Symbol('VoiceStatusService'),
+    VoiceTimeService: Symbol('VoiceTimeService'),
+    ChannelService: Symbol('ChannelService'),
 };
