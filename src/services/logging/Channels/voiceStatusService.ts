@@ -10,20 +10,28 @@ export class VoiceStatusService {
     constructor(@inject(TYPES.VoiceStatusRepository) VoiceStatusRepo: VoiceStatusRepository) {
         this.voiceStatusRepo = VoiceStatusRepo;
     }
-    public async setStatus(newState: VoiceState) {
-        let status: VoiceStatus;
-        status = {
-            userName: newState.member.displayName,
-            userId: newState.member.id,
-            date: new Date(),
-        };
-        if (newState.channel !== null) {
-            status.connected = true;
-            status.channelName = newState.channel.name;
-            status.channelId = newState.channel.id;
-        } else {
-            status.connected = false;
+    private checkIfChanged(oldState: VoiceState, newState: VoiceState): boolean {
+        if (oldState.channel !== null && newState.channel !== null && oldState.channel.name === newState.channel.name) {
+            return false;
         }
-        this.voiceStatusRepo.CreateLog(status);
+        return true;
+    }
+    public async setStatus(oldState: VoiceState, newState: VoiceState): Promise<void> {
+        if (this.checkIfChanged(oldState, newState)) {
+            let status: VoiceStatus;
+            status = {
+                userName: newState.member.displayName,
+                userId: newState.member.id,
+                date: new Date(),
+            };
+            if (newState.channel !== null) {
+                status.connected = true;
+                status.channelName = newState.channel.name;
+                status.channelId = newState.channel.id;
+            } else {
+                status.connected = false;
+            }
+            this.voiceStatusRepo.CreateLog(status);
+        }
     }
 }
