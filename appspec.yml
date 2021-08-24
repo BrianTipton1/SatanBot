@@ -3,8 +3,8 @@ os: linux
 files:
   - source: /
     destination: /home/ubuntu/SatanBot/
-hooks:
-  ApplicationStart:
-    - location: ./scripts/run.sh
-      timeout: 300
-      runas: ubuntu
+# hooks:
+#   ApplicationStart:
+#     - location: ./scripts/run.sh
+#       timeout: 300
+#       runas: ubuntu
