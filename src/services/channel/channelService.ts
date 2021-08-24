@@ -16,7 +16,7 @@ export class ChannelService {
         this.voiceStatusService = voiceStatusService;
     }
     async handleVoiceState(oldState: VoiceState, newState: VoiceState) {
-        this.voiceTimeService.calculateTime(newState);
-        // this.voiceStatusService.setStatus(newState);
+        await this.voiceTimeService.calculateTime(newState);
+        await this.voiceStatusService.setStatus(newState);
     }
 }

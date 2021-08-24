@@ -53,8 +53,8 @@ export default class MongoBase<TItem> {
      * @param query query pattern of objects to get
      * @returns Promise<mongoose.EnforceDocument<TItem, {}>[]>
      */
-    protected async getMany(query: FilterQuery<TItem>): Promise<EnforceDocument<TItem, {}>[]> {
-        return await this._model.find(query);
+    protected async getMostTenRecent(query: FilterQuery<TItem>): Promise<EnforceDocument<TItem, {}>[]> {
+        return await this._model.find(query).limit(10).sort({ $natural: -1 });
     }
 
     /**

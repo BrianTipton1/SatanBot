@@ -4,6 +4,7 @@ import { TYPES } from '../../../types';
 import { VoiceState } from 'discord.js';
 import VoiceStatusRepository from '../../../repositories/Logging/Channels/status/voiceStatusRepository';
 import { VoiceStatusService } from './voiceStatusService';
+import VoiceTime from '../../../domain/Logging/Channels/time/voiceTime';
 
 @injectable()
 export class VoiceTimeService {
@@ -20,14 +21,32 @@ export class VoiceTimeService {
         this.voiceStatusService = VoiceStatusService;
     }
     private async getLastStatus(userId: string) {
-        const resp = await this.voiceStatusRepo.GetMany(userId);
-        if (resp !== null) {
-            return resp[resp.length - 1];
+        const resp = await this.voiceStatusRepo.GetTenMostRecent(userId);
+        if (resp.length !== 0) {
+            return resp[0];
         }
         return null;
     }
     public async calculateTime(newStatus: VoiceState) {
         const oldStatus = await this.getLastStatus(newStatus.member.id);
-        console.log('test');
+        if (oldStatus === null) {
+            return;
+        }
+        if (oldStatus.connected === true && newStatus.channel !== null) {
+            return;
+        }
+        if (oldStatus.connected === true && newStatus.channel === null) {
+            const timeNow = new Date();
+            const timeInChannel = timeNow.getTime() - oldStatus.date.getTime();
+            const vTime: VoiceTime = {
+                userName: newStatus.member.displayName,
+                userId: newStatus.member.id,
+                channelName: oldStatus.channelName,
+                channelId: oldStatus.channelId,
+                time: timeInChannel,
+                date: timeNow,
+            };
+            await this.voiceTimeRepo.CreateLog(vTime);
+        }
     }
 }

@@ -12,7 +12,7 @@ export default class VoiceStatusRepository extends MongoBase<VoiceStatus> {
     }
     /**
      *
-     * @param log Audit Object to be posted to Mongo
+     * @param log Log Object to be posted to Mongo
      * @returns  Promise<VoiceStatus & Document<any, any, VoiceStatus>>
      */
     public async CreateLog(log: VoiceStatus): Promise<VoiceStatus & Document<any, any, VoiceStatus>> {
@@ -22,19 +22,19 @@ export default class VoiceStatusRepository extends MongoBase<VoiceStatus> {
             throw new Error('Could not connect to mongo: ' + error);
         }
     }
-    public async GetMany(userId: string) {
+    public async GetTenMostRecent(userId: string) {
         const query: VoiceStatusQuerybyUserId = {
             userId: userId,
         };
         try {
-            return await this.getMany(query);
+            return await this.getMostTenRecent(query);
         } catch (error) {
             throw new Error('Could not connect to mongo: ' + error);
         }
     }
     /**
      *
-     * @param id Id of the Audit to get
+     * @param id Id of the Log to get
      * @returns Promise<(VoiceStatus & Document<any, any, VoiceStatus>) | null>
      */
     public async GetLog(id: string): Promise<(VoiceStatus & Document<any, any, VoiceStatus>) | null> {
@@ -46,8 +46,8 @@ export default class VoiceStatusRepository extends MongoBase<VoiceStatus> {
     }
     /**
      *
-     * @param id Id of the Audit to update
-     * @param log Updated Audit Object
+     * @param id Id of the Log to update
+     * @param log Updated Log Object
      * @returns  Promise<UpdateWriteOpResult>
      */
     public async UpdateLogById(id: string, log: VoiceStatus): Promise<UpdateWriteOpResult> {

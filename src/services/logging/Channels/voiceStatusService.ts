@@ -10,7 +10,7 @@ export class VoiceStatusService {
     constructor(@inject(TYPES.VoiceStatusRepository) VoiceStatusRepo: VoiceStatusRepository) {
         this.voiceStatusRepo = VoiceStatusRepo;
     }
-    public setStatus(newState: VoiceState) {
+    public async setStatus(newState: VoiceState) {
         let status: VoiceStatus;
         status = {
             userName: newState.member.displayName,
