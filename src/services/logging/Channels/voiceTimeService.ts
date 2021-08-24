@@ -33,7 +33,20 @@ export class VoiceTimeService {
             return;
         }
         if (oldStatus.connected === true && newStatus.channel !== null) {
-            return;
+            if (newStatus.channel.name === oldStatus.channelName) {
+                return;
+            }
+            const timeNow = new Date();
+            const timeInChannel = timeNow.getTime() - oldStatus.date.getTime();
+            const vTime: VoiceTime = {
+                userName: newStatus.member.displayName,
+                userId: newStatus.member.id,
+                channelName: oldStatus.channelName,
+                channelId: oldStatus.channelId,
+                time: timeInChannel,
+                date: timeNow,
+            };
+            return await this.voiceTimeRepo.CreateLog(vTime);
         }
         if (oldStatus.connected === true && newStatus.channel === null) {
             const timeNow = new Date();
@@ -46,7 +59,7 @@ export class VoiceTimeService {
                 time: timeInChannel,
                 date: timeNow,
             };
-            await this.voiceTimeRepo.CreateLog(vTime);
+            return await this.voiceTimeRepo.CreateLog(vTime);
         }
     }
 }
