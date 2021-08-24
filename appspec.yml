@@ -1,0 +1,14 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/SatanBot/
+hooks:
+  BeforeInstall:
+    - location: scripts/build.sh
+      timeout: 60
+      runas: root
+  ApplicationStart:
+    - location: scripts/run.sh
+      timeout: 300
+      runas: root
