@@ -1,2 +1,3 @@
 #!/bin/bash
-yarn run start
+docker build -t satan-bot .
+docker run satan-bot
