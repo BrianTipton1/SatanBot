@@ -1,15 +1,14 @@
 {
     'version': '3.7',
-    'services':
-        {
-            'mongo':
-                {
-                    'image': 'andresvidal/rpi3-mongodb3',
-                    'restart': 'always',
-                    'ports': ['27017:27017'],
-                    'environment': { 'MONGO_INITDB_ROOT_USERNAME': 'root', 'MONGO_INITDB_ROOT_PASSWORD': 'satanDB' },
-                    'volumes': ['mongo-data:/data/db'],
-                },
+    'services': {
+            # 'mongo':
+            #     {
+            #         'image': 'andresvidal/rpi3-mongodb3',
+            #         'restart': 'always',
+            #         'ports': ['27017:27017'],
+            #         'environment': { 'MONGO_INITDB_ROOT_USERNAME': 'root', 'MONGO_INITDB_ROOT_PASSWORD': 'satanDB' },
+            #         'volumes': ['mongo-data:/data/db'],
+            #     },
             'satanbot':
                 {
                     'depends_on': ['mongo'],
@@ -17,5 +16,5 @@
                     'build': { 'context': '.', 'dockerfile': 'Dockerfile' },
                 },
         },
-    'volumes': { 'mongo-data': null },
+    # 'volumes': { 'mongo-data': null },
 }
