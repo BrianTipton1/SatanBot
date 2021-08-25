@@ -1,10 +1,10 @@
 version: 0.0
 os: linux
 files:
-  - source: /
-    destination: /home/ubuntu/SatanBot/
+    - source: /
+      destination: /home/ubuntu/SatanBot/
 hooks:
-  ApplicationStart:
-    - location: /scripts/run.sh
-      timeout: 300
-      runas: root
+    ApplicationStart:
+        - location: /scripts/run.sh
+          timeout: 1200
+          runas: root
