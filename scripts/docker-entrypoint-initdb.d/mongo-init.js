@@ -1,12 +1,10 @@
-db.createUser(
+db.createUser({
+    user: 'root',
+    pwd: 'satans-passwd',
+    roles: [
         {
-            user: "root",
-            pwd: "satans-passwd",
-            roles: [
-                {
-                    role: "readWrite",
-                    db: "satanDB"
-                }
-            ]
-        }
-);
+            role: 'readWrite',
+            db: 'satandb',
+        },
+    ],
+});
