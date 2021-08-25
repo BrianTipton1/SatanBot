@@ -9,9 +9,8 @@
             #         'environment': { 'MONGO_INITDB_ROOT_USERNAME': 'root', 'MONGO_INITDB_ROOT_PASSWORD': 'satanDB' },
             #         'volumes': ['mongo-data:/data/db'],
             #     },
-            'satanbot':
-                {
-                    'depends_on': ['mongo'],
+            'satanbot': {
+                    # 'depends_on': ['mongo'],
                     'restart': 'always',
                     'build': { 'context': '.', 'dockerfile': 'Dockerfile' },
                 },
