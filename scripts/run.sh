@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -e
-
+cp /home/ubuntu/.env /home/ubuntu/SatanBot/.env
 cd /home/ubuntu/SatanBot
-docker build -t satan-bot .
-docker run satan-bot
+docker-compose up -d --build
