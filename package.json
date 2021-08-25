@@ -5,9 +5,7 @@
 	"author": "Brian Tipton <Brian.p.tipton@gmail.com>",
 	"license": "MIT",
 	"dependencies": {
-		"@discordjs/rest": "^0.1.0-canary.0",
 		"@types/node": "^16.7.1",
-		"discord-api-types": "^0.22.0",
 		"discord.js": "^13.1.0",
 		"dotenv": "^10.0.0",
 		"inversify": "^5.1.1",

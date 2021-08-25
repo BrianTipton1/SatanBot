@@ -16,10 +16,10 @@ class MongoAcesss {
         this.mongooseConnection = connection;
         this.mongooseConnection
             .once('open', () => {
-                console.log('info', 'Connected to MongoDB');
+                console.log('info: ', 'Connected to MongoDB');
             })
             .on('error', function (error) {
-                console.log('error', 'Mongo connection error: ' + error);
+                console.log('error: ', 'Mongo connection error: ' + error);
                 throw error;
             });
         options = {
