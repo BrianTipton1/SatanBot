@@ -22,7 +22,9 @@ export class MessageService {
     }
 
     async handleNewMessage(message: Message) {
-        this.newMessageLogService.create(message);
+        if (message.type === 'DEFAULT') {
+            this.newMessageLogService.create(message);
+        }
     }
     async handleUpdatedMessage(oldMessage: Message, newMessage: Message) {
         this.editedMessageLogService.create(oldMessage, newMessage);

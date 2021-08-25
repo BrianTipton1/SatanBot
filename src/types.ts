@@ -16,4 +16,6 @@ export const TYPES = {
     VoiceStatusService: Symbol('VoiceStatusService'),
     VoiceTimeService: Symbol('VoiceTimeService'),
     ChannelService: Symbol('ChannelService'),
+    MemberStatusRepository: Symbol('MemberStatusRepository'),
+    MemberService: Symbol('MemberService'),
 };

@@ -1,9 +1,10 @@
-import { Client, Message, VoiceState } from 'discord.js';
+import { Client, GuildMember, Message, MessageEmbed, MessageEmbedOptions, VoiceState } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { MessageService } from '../services/message/messageService';
-import DeletedMessageLog from '../domain/Logging/Messaging/deletedMessage/deletedMessageLog';
 import { ChannelService } from '../services/channel/channelService';
+import { MemberService } from '../services/member/memberService';
+import { MessageOptions } from 'discord.js';
 
 @injectable()
 export class Bot {
@@ -11,17 +12,20 @@ export class Bot {
     private readonly token: string;
     private messageService: MessageService;
     private channelService: ChannelService;
+    private memberService: MemberService;
 
     constructor(
         @inject(TYPES.Client) client: Client,
         @inject(TYPES.Token) token: string,
         @inject(TYPES.MessageService) messageService: MessageService,
         @inject(TYPES.ChannelService) channelService: ChannelService,
+        @inject(TYPES.MemberService) memberService: MemberService,
     ) {
         this.client = client;
         this.token = token;
         this.messageService = messageService;
         this.channelService = channelService;
+        this.memberService = memberService;
     }
 
     public listen(): Promise<string> {
@@ -56,7 +60,13 @@ export class Bot {
         this.client.on('voiceStateUpdate', (oldState: VoiceState, newState: VoiceState) => {
             this.channelService.handleVoiceState(oldState, newState);
         });
-
+        this.client.on('guildMemberAdd', (member: GuildMember) => {
+            this.memberService.handleMemberStatus(member);
+            this.memberService.sendWelcome(member);
+        });
+        this.client.on('guildMemberRemove', (member: GuildMember) => {
+            this.memberService.handleMemberStatus(member);
+        });
         return this.client.login(this.token);
     }
 }

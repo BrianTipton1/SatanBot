@@ -16,15 +16,22 @@ import VoiceStatusRepository from './repositories/Logging/Channels/status/voiceS
 import { VoiceStatusService } from './services/logging/Channels/voiceStatusService';
 import { VoiceTimeService } from './services/logging/Channels/voiceTimeService';
 import { ChannelService } from './services/channel/channelService';
+import MemberStatusRepository from './repositories/Logging/member/memberStatusRepository';
+import { MemberService } from './services/member/memberService';
 
 let container = new Container();
 
 container.bind<Bot>(TYPES.Bot).to(Bot).inSingletonScope();
-container
-    .bind<Client>(TYPES.Client)
-    .toConstantValue(
-        new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] }),
-    );
+container.bind<Client>(TYPES.Client).toConstantValue(
+    new Client({
+        intents: [
+            Intents.FLAGS.GUILDS,
+            Intents.FLAGS.GUILD_MESSAGES,
+            Intents.FLAGS.GUILD_VOICE_STATES,
+            Intents.FLAGS.GUILD_MEMBERS,
+        ],
+    }),
+);
 container.bind<MongoAccess>(TYPES.MongoAccess).to(MongoAccess).inSingletonScope();
 //Constants
 container.bind<string>(TYPES.Token).toConstantValue(process.env.TOKEN);
@@ -40,6 +47,7 @@ container
 container.bind<VoiceStatusService>(TYPES.VoiceStatusService).to(VoiceStatusService).inSingletonScope();
 container.bind<VoiceTimeService>(TYPES.VoiceTimeService).to(VoiceTimeService).inSingletonScope();
 container.bind<ChannelService>(TYPES.ChannelService).to(ChannelService).inSingletonScope();
+container.bind<MemberService>(TYPES.MemberService).to(MemberService).inSingletonScope();
 // Repos
 container.bind<NewMessageLogRepository>(TYPES.NewMessageLogRepository).to(NewMessageLogRepository).inSingletonScope();
 container
@@ -52,4 +60,5 @@ container
     .inSingletonScope();
 container.bind<VoiceTimeRepository>(TYPES.VoiceTimeRepository).to(VoiceTimeRepository).inSingletonScope();
 container.bind<VoiceStatusRepository>(TYPES.VoiceStatusRepository).to(VoiceStatusRepository).inSingletonScope();
+container.bind<MemberStatusRepository>(TYPES.MemberStatusRepository).to(MemberStatusRepository).inSingletonScope();
 export default container;
