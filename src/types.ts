@@ -19,4 +19,5 @@ export const TYPES = {
     MemberStatusRepository: Symbol('MemberStatusRepository'),
     MemberService: Symbol('MemberService'),
     TierListService: Symbol('TierListService'),
+    TierListRepository: Symbol('TierListRepository'),
 };

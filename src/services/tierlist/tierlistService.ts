@@ -1,10 +1,15 @@
-import { Channel, Client, Message, StartThreadOptions } from 'discord.js';
+import { Message, StartThreadOptions } from 'discord.js';
 import { inject, injectable } from 'inversify';
+import TierList from '../../domain/tierlist/tierList';
+import TierListRepository from '../../repositories/tierlist/tierListRepository';
 import { TYPES } from '../../types';
 
 @injectable()
 export class TierListService {
-    constructor() {}
+    private tierListRepo: TierListRepository;
+    constructor(@inject(TYPES.TierListRepository) tierListRepo: TierListRepository) {
+        this.tierListRepo = tierListRepo;
+    }
     private getThreadName(message: Message): string {
         const splits: Array<string> = message.content.split(' ');
         let threadName: string = '';
@@ -14,7 +19,7 @@ export class TierListService {
             }
         }
         if (threadName.length !== 0) {
-            return threadName.charAt(0).toUpperCase() + threadName.slice(1);
+            return threadName.charAt(0).toUpperCase() + threadName.slice(1).slice(0, -1);
         }
         return 'null';
     }
@@ -27,6 +32,8 @@ export class TierListService {
             return;
         }
         if (message.content.includes('-alpha') && !message.content.includes('-num')) {
+            const threadName = this.getThreadName(message);
+            this.createTierList(message, 'alpha', threadName);
             const threadOptions: StartThreadOptions = {
                 name: `${this.getThreadName(message)} Tier List`,
                 autoArchiveDuration: 1440,
@@ -34,9 +41,7 @@ export class TierListService {
             };
             const thread = await message.startThread(threadOptions);
             thread.messages.channel.send(
-                `Hey <@${message.author.id}> I created a thread for your ${this.getThreadName(
-                    message,
-                )}Tier List! It expires after 24 hours.` +
+                `Hey <@${message.author.id}> I created a thread for your ${threadName} Tier List! It expires after 24 hours.` +
                     `\nWhen you are finished with the list type -finish in the thread!\n` +
                     "In order to add something to a specific letter on the list add a '-' and the" +
                     " letter you want!\nExample: '-s Arbys Frys'" +
@@ -44,6 +49,8 @@ export class TierListService {
             );
         }
         if (message.content.includes('-num') && !message.content.includes('-alpha')) {
+            const threadName = this.getThreadName(message);
+            this.createTierList(message, 'num', threadName);
             const threadOptions: StartThreadOptions = {
                 name: `${this.getThreadName(message)} Tier List`,
                 autoArchiveDuration: 1440,
@@ -51,9 +58,7 @@ export class TierListService {
             };
             const thread = await message.startThread(threadOptions);
             thread.messages.channel.send(
-                `Hey <@${message.author.id}> I created a thread for your ${this.getThreadName(
-                    message,
-                )}Tier List! It expires after 24 hours.` +
+                `Hey <@${message.author.id}> I created a thread for your ${threadName} Tier List! It expires after 24 hours.` +
                     `\nWhen you are finished with the list type -finish in the thread!\n` +
                     'In order to add something to a specific number on the list add a ' +
                     "'-' and the number you want!\nExample: '-2 Arbys Frys'\n" +
@@ -61,5 +66,15 @@ export class TierListService {
                     'To print the current standings type -print',
             );
         }
+    }
+    private async createTierList(message: Message, tierType: string, threadName: string) {
+        const tierList: TierList = {
+            tierListAuthor: message.author.username,
+            tierListAuthorId: message.author.id,
+            tierListType: tierType,
+            tierListName: threadName,
+            dateCreated: new Date(),
+        };
+        this.tierListRepo.Createitem(tierList);
     }
 }

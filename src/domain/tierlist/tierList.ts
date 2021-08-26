@@ -1,9 +1,10 @@
 import TierItem from './tierItem';
 
-export default interface tierList {
+export default interface TierList {
     tierListName: string;
     tierListAuthor: string;
-    tierListId: string;
+    tierListAuthorId: string;
+    tierListType: string;
     dateCreated: Date;
     tierItems?: Array<TierItem>;
 }
