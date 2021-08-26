@@ -18,4 +18,5 @@ export const TYPES = {
     ChannelService: Symbol('ChannelService'),
     MemberStatusRepository: Symbol('MemberStatusRepository'),
     MemberService: Symbol('MemberService'),
+    TierListService: Symbol('TierListService'),
 };

@@ -1,4 +1,13 @@
-import { Client, GuildMember, Message, MessageEmbed, MessageEmbedOptions, VoiceState } from 'discord.js';
+import {
+    Channel,
+    Client,
+    GuildMember,
+    Interaction,
+    Message,
+    MessageEmbed,
+    MessageEmbedOptions,
+    VoiceState,
+} from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { MessageService } from '../services/message/messageService';
