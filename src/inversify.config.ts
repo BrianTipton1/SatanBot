@@ -20,6 +20,7 @@ import MemberStatusRepository from './repositories/Logging/member/memberStatusRe
 import { MemberService } from './services/member/memberService';
 import { TierListService } from './services/tierlist/tierlistService';
 import TierListRepository from './repositories/tierlist/tierListRepository';
+import { CommandService } from './services/command/commandService';
 
 let container = new Container();
 
@@ -51,6 +52,7 @@ container.bind<VoiceTimeService>(TYPES.VoiceTimeService).to(VoiceTimeService).in
 container.bind<ChannelService>(TYPES.ChannelService).to(ChannelService).inSingletonScope();
 container.bind<MemberService>(TYPES.MemberService).to(MemberService).inSingletonScope();
 container.bind<TierListService>(TYPES.TierListService).to(TierListService).inSingletonScope();
+container.bind<CommandService>(TYPES.CommandService).to(CommandService).inSingletonScope();
 // Repos
 container.bind<NewMessageLogRepository>(TYPES.NewMessageLogRepository).to(NewMessageLogRepository).inSingletonScope();
 container

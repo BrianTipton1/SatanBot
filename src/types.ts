@@ -20,4 +20,5 @@ export const TYPES = {
     MemberService: Symbol('MemberService'),
     TierListService: Symbol('TierListService'),
     TierListRepository: Symbol('TierListRepository'),
+    CommandService: Symbol('CommandService'),
 };

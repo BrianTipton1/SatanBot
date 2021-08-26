@@ -2,6 +2,7 @@ import { Message } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import DeletedMessageLog from '../../domain/Logging/Messaging/deletedMessage/deletedMessageLog';
 import { TYPES } from '../../types';
+import { CommandService } from '../command/commandService';
 import { DeletedMessageLogService } from '../logging/messaging/deletedMessageLogService';
 import { EditedMessageLogService } from '../logging/messaging/editedMessageLogService';
 import { NewMessageLogService } from '../logging/messaging/newMessageLogService';
@@ -12,17 +13,18 @@ export class MessageService {
     private newMessageLogService: NewMessageLogService;
     private editedMessageLogService: EditedMessageLogService;
     private deletedMessageLogService: DeletedMessageLogService;
-    private tierListService: TierListService;
+    private commandService: CommandService;
     constructor(
         @inject(TYPES.MessageLogService) newMessageLogService: NewMessageLogService,
         @inject(TYPES.EditedMessageLogService) editedMessageLogService: EditedMessageLogService,
         @inject(TYPES.DeletedMessageLogService) deletedMessageLogService: DeletedMessageLogService,
         @inject(TYPES.TierListService) tierListService: TierListService,
+        @inject(TYPES.CommandService) commandService: CommandService,
     ) {
         this.newMessageLogService = newMessageLogService;
         this.editedMessageLogService = editedMessageLogService;
         this.deletedMessageLogService = deletedMessageLogService;
-        this.tierListService = tierListService;
+        this.commandService = commandService;
     }
 
     private checkIfCommand(message: Message) {
@@ -31,16 +33,11 @@ export class MessageService {
         }
         return false;
     }
-    private handleCommand(message: Message) {
-        if (message.content.includes('tierlist')) {
-            this.tierListService.startTierList(message);
-        }
-    }
     async handleNewMessage(message: Message) {
         if (message.type === 'DEFAULT') {
             this.newMessageLogService.create(message);
             if (this.checkIfCommand(message)) {
-                this.handleCommand(message);
+                this.commandService.handleCommand(message);
             }
         }
     }
