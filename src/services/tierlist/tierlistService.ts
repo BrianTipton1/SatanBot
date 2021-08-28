@@ -1,4 +1,4 @@
-import { Message, StartThreadOptions, Channel } from 'discord.js';
+import { Message, StartThreadOptions } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import TierList from '../../domain/tierlist/tierList';
 import TierListRepository from '../../repositories/tierlist/tierListRepository';
@@ -46,7 +46,7 @@ export class TierListService {
                 `Hey <@${message.author.id}> I created a thread for your ${threadName} tier list! It expires after 24 hours.` +
                     `\nWhen you are finished with the list type -finish in the thread!\n` +
                     "In order to add something to a specific letter on the list add a '-' and the" +
-                    " letter you want!\nExample: '-s Arbys Frys'" +
+                    " letter you want!\nExample: '-s Arbys Frys'\n" +
                     'To print the current standings type -print',
             );
         }
@@ -147,6 +147,9 @@ export class TierListService {
         if (parseInt(match)) {
             return parseInt(match);
         } else {
+            if (match.length > 1) {
+                return null;
+            }
             return match;
         }
     }
