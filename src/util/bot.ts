@@ -1,19 +1,9 @@
-import {
-    Channel,
-    Client,
-    GuildMember,
-    Interaction,
-    Message,
-    MessageEmbed,
-    MessageEmbedOptions,
-    VoiceState,
-} from 'discord.js';
+import { Client, GuildMember, Message, VoiceState } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { MessageService } from '../services/message/messageService';
 import { ChannelService } from '../services/channel/channelService';
 import { MemberService } from '../services/member/memberService';
-import { MessageOptions } from 'discord.js';
 
 @injectable()
 export class Bot {
