@@ -6,6 +6,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@types/node": "^16.7.1",
+		"cli-table": "^0.3.6",
 		"discord.js": "^13.1.0",
 		"dotenv": "^10.0.0",
 		"inversify": "^5.1.1",
@@ -17,5 +18,8 @@
 		"start": "node dist/app.js",
 		"build": "tsc",
 		"flow": "tsc && node dist/app.js"
+	},
+	"devDependencies": {
+		"@types/cli-table": "^0.3.0"
 	}
 }

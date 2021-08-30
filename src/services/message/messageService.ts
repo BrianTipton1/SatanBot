@@ -18,7 +18,6 @@ export class MessageService {
         @inject(TYPES.MessageLogService) newMessageLogService: NewMessageLogService,
         @inject(TYPES.EditedMessageLogService) editedMessageLogService: EditedMessageLogService,
         @inject(TYPES.DeletedMessageLogService) deletedMessageLogService: DeletedMessageLogService,
-        @inject(TYPES.TierListService) tierListService: TierListService,
         @inject(TYPES.CommandService) commandService: CommandService,
     ) {
         this.newMessageLogService = newMessageLogService;

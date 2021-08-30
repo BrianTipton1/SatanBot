@@ -16,7 +16,7 @@ export class CommandService {
         if (message.content.includes('tierlist')) {
             this.tierListService.startTierList(message);
         }
-        if (message.content.includes('help')) {
+        if (message.content.includes('-help')) {
             message.reply(
                 `${message.client.user.username} currently only has one command\n\n` +
                     '"-tierlist" --> Create a tierlist either an "S tier list" or a numbered list\n' +
