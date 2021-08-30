@@ -1,4 +1,4 @@
-import { Message, StartThreadOptions } from 'discord.js';
+import { ChannelManager, Message, StartThreadOptions, ThreadChannel, ThreadMember } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import TierList from '../../domain/tierlist/tierList';
 import TierListRepository from '../../repositories/tierlist/tierListRepository';
@@ -6,6 +6,9 @@ import { TYPES } from '../../types';
 import { Document } from 'mongoose';
 import TierItem from '../../domain/tierlist/tierItem';
 import Table = require('cli-table');
+import { Channel } from 'diagnostics_channel';
+import { time } from 'console';
+import { SSL_OP_EPHEMERAL_RSA } from 'constants';
 
 @injectable()
 export class TierListService {
@@ -97,17 +100,58 @@ export class TierListService {
             this.handleAlphaTierCommand(message, this.docToDomain(tierlist));
         }
     }
+    private async sleep(milliseconds: number) {
+        const date = Date.now();
+        let currentDate = null;
+        do {
+            currentDate = Date.now();
+        } while (currentDate - date < milliseconds);
+    }
+    private async countdown(message: Message) {
+        await message.channel.send('5');
+        await this.sleep(1000);
+        await message.channel.send('4');
+        await this.sleep(1000);
+        await message.channel.send('3');
+        await this.sleep(1000);
+        await message.channel.send('2');
+        await this.sleep(1000);
+        await message.channel.send('1');
+        await this.sleep(1000);
+    }
+    private async archiveThread(message: Message) {
+        const chan = await message.client.channels.fetch(message.channelId);
+        const thread = chan as ThreadChannel;
+        await thread.setArchived(true);
+    }
     private async handleNumTierCommand(message: Message, tierlist: TierList) {
-        if (message.content.includes('-print')) {
-            this.generateTable(tierlist);
+        if (message.content.includes('-finish')) {
+            const table = this.generateTable(tierlist);
+            message.channel.send('Displaying final results in.....');
+            await this.countdown(message);
+            await message.reply(table);
+            await this.archiveThread(message);
             return;
         }
-        if (this.getSetTier(message) === null || typeof this.getSetTier(message) === 'string') {
+        if (message.content.includes('-print')) {
+            message.reply(this.generateTable(tierlist));
+            return;
+        }
+        if (
+            this.getSetTier(message) === null ||
+            typeof this.getSetTier(message) === 'string' ||
+            this.getItem(message) === null
+        ) {
             message.reply(
                 `<@${message.author.id}> to set a item to a specific tier use the command character and the letter or number you want to assign\n` +
                     'Example: -1 BigMac',
             );
             return;
+        }
+        for (let i = 0; i < tierlist.tierItems.length; i++) {
+            if (tierlist.tierItems[i].tier === this.getSetTier(message)) {
+                tierlist.tierItems[i].tier = null;
+            }
         }
         let item: TierItem = {
             tier: this.getSetTier(message),
@@ -120,12 +164,24 @@ export class TierListService {
     }
 
     private async handleAlphaTierCommand(message: Message, tierlist: TierList) {
+        if (message.content.includes('-finish')) {
+            const table = this.generateTable(tierlist);
+            message.channel.send('Displaying final results in.....');
+            await this.countdown(message);
+            await message.reply(table);
+            await this.archiveThread(message);
+            return;
+        }
         if (message.content.includes('-print')) {
             const table = this.generateTable(tierlist);
             message.reply(table);
             return;
         }
-        if (this.getSetTier(message) === null || typeof this.getSetTier(message) === 'number') {
+        if (
+            this.getSetTier(message) === null ||
+            typeof this.getSetTier(message) === 'number' ||
+            this.getItem(message) === null
+        ) {
             message.reply(
                 `<@${message.author.id}> to set a item to a specific tier use the command character and the letter or number you want to assign\n` +
                     'Example: -s BigMac',
@@ -146,6 +202,15 @@ export class TierListService {
         if (items.length === 2) {
             return items[1];
         }
+        if (items.length > 2) {
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].includes('-')) {
+                    items.splice(i, 1);
+                }
+            }
+            return items.join(' ');
+        }
+        return null;
     }
     private getSetTier(message: Message) {
         const re = /-\w\w\w|-\w\w|-\w/;
@@ -207,7 +272,8 @@ export class TierListService {
             for (let i = 0; i < tierList.tierItems.length; i++) {
                 alltiers.push(tierList.tierItems[i].tier as string);
             }
-            const tiers = [...new Set(alltiers)];
+            let tiers = [...new Set(alltiers)];
+            tiers = tiers.sort();
             for (let tier = 0; tier < tiers.length; tier++) {
                 let letteritems: Array<string> = [];
                 for (let items = 0; items < tierList.tierItems.length; items++) {
@@ -215,19 +281,53 @@ export class TierListService {
                         letteritems.push(tierList.tierItems[items].item);
                     }
                 }
-                if (letteritems.length > 7) {
-                    let newItem: Array<string> = [];
-                    let num = letteritems.length / 7;
-                    num = Math.ceil(num);
-                    let item = '';
-                    for (let i = 0; i < num; i++) {}
+                const onestr = letteritems.join(' ');
+                if (tiers[tier] === 's') {
+                    table.unshift({ [`${tiers[tier].toUpperCase()}`]: onestr });
                 } else {
-                    table.push({ [`${tiers[tier].toUpperCase()}`]: letteritems });
+                    table.push({ [`${tiers[tier].toUpperCase()}`]: onestr });
                 }
             }
             return '`' + table.toString() + '`';
         }
         if (tierList.tierListType === 'num') {
+            const table = new Table({
+                chars: {
+                    top: '═',
+                    'top-mid': '╤',
+                    'top-left': '╔',
+                    'top-right': '╗',
+                    bottom: '═',
+                    'bottom-mid': '╧',
+                    'bottom-left': '╚',
+                    'bottom-right': '╝',
+                    left: '║',
+                    'left-mid': '╟',
+                    mid: '─',
+                    'mid-mid': '┼',
+                    right: '║',
+                    'right-mid': '╢',
+                    middle: '│',
+                },
+                head: [`${tierList.tierListName} Tier List`],
+            });
+            let nums: Array<number> = [];
+            for (let i = 0; i < tierList.tierItems.length; i++) {
+                nums.push(tierList.tierItems[i].tier as number);
+            }
+            let tiers = [...new Set(nums)];
+            tiers = tiers.sort();
+            for (let i = 0; i < tiers.length; i++) {
+                for (let tier = 0; tier < tierList.tierItems.length; tier++) {
+                    if (tierList.tierItems[tier].tier === null) {
+                        continue;
+                    }
+                    if (tiers[i] === tierList.tierItems[tier].tier) {
+                        table.push({ [`${tiers[i]}`]: tierList.tierItems[tier].item });
+                    }
+                }
+            }
+            return '`' + table.toString() + '`';
         }
     }
 }
