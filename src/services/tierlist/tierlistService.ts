@@ -5,6 +5,7 @@ import TierListRepository from '../../repositories/tierlist/tierListRepository';
 import { TYPES } from '../../types';
 import { Document } from 'mongoose';
 import TierItem from '../../domain/tierlist/tierItem';
+import Table = require('cli-table');
 
 @injectable()
 export class TierListService {
@@ -12,6 +13,7 @@ export class TierListService {
     constructor(@inject(TYPES.TierListRepository) tierListRepo: TierListRepository) {
         this.tierListRepo = tierListRepo;
     }
+
     private getThreadName(message: Message): string {
         const splits: Array<string> = message.content.split(' ');
         let threadName: string = '';
@@ -96,6 +98,10 @@ export class TierListService {
         }
     }
     private async handleNumTierCommand(message: Message, tierlist: TierList) {
+        if (message.content.includes('-print')) {
+            this.generateTable(tierlist);
+            return;
+        }
         if (this.getSetTier(message) === null || typeof this.getSetTier(message) === 'string') {
             message.reply(
                 `<@${message.author.id}> to set a item to a specific tier use the command character and the letter or number you want to assign\n` +
@@ -114,6 +120,11 @@ export class TierListService {
     }
 
     private async handleAlphaTierCommand(message: Message, tierlist: TierList) {
+        if (message.content.includes('-print')) {
+            const table = this.generateTable(tierlist);
+            message.reply(table);
+            return;
+        }
         if (this.getSetTier(message) === null || typeof this.getSetTier(message) === 'number') {
             message.reply(
                 `<@${message.author.id}> to set a item to a specific tier use the command character and the letter or number you want to assign\n` +
@@ -167,6 +178,56 @@ export class TierListService {
                 tier.tierItems = doc[0].tierItems;
             }
             return tier;
+        }
+    }
+
+    private generateTable(tierList: TierList) {
+        if (tierList.tierListType === 'alpha') {
+            const table = new Table({
+                chars: {
+                    top: '═',
+                    'top-mid': '╤',
+                    'top-left': '╔',
+                    'top-right': '╗',
+                    bottom: '═',
+                    'bottom-mid': '╧',
+                    'bottom-left': '╚',
+                    'bottom-right': '╝',
+                    left: '║',
+                    'left-mid': '╟',
+                    mid: '─',
+                    'mid-mid': '┼',
+                    right: '║',
+                    'right-mid': '╢',
+                    middle: '│',
+                },
+                head: [`${tierList.tierListName} Tier List`],
+            });
+            let alltiers: Array<string> = [];
+            for (let i = 0; i < tierList.tierItems.length; i++) {
+                alltiers.push(tierList.tierItems[i].tier as string);
+            }
+            const tiers = [...new Set(alltiers)];
+            for (let tier = 0; tier < tiers.length; tier++) {
+                let letteritems: Array<string> = [];
+                for (let items = 0; items < tierList.tierItems.length; items++) {
+                    if (tiers[tier] === tierList.tierItems[items].tier) {
+                        letteritems.push(tierList.tierItems[items].item);
+                    }
+                }
+                if (letteritems.length > 7) {
+                    let newItem: Array<string> = [];
+                    let num = letteritems.length / 7;
+                    num = Math.ceil(num);
+                    let item = '';
+                    for (let i = 0; i < num; i++) {}
+                } else {
+                    table.push({ [`${tiers[tier].toUpperCase()}`]: letteritems });
+                }
+            }
+            return '`' + table.toString() + '`';
+        }
+        if (tierList.tierListType === 'num') {
         }
     }
 }
