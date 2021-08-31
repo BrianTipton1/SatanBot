@@ -30,7 +30,7 @@ export class MessageService {
         const devilWords: Array<string> = ['666', 'satan', 'devil', 'lucifer'];
         if (message.content !== null) {
             for (let i = 0; i < devilWords.length; i++) {
-                if (message.content.includes(devilWords[i])) {
+                if (message.content.toLocaleLowerCase().includes(devilWords[i])) {
                     message.reply('You rang?');
                     break;
                 }
