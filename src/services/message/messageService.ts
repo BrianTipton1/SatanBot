@@ -26,6 +26,17 @@ export class MessageService {
         this.commandService = commandService;
     }
 
+    private beSatan(message: Message) {
+        const devilWords: Array<string> = ['666', 'satan', 'devil', 'lucifer'];
+        if (message.content !== null) {
+            for (let i = 0; i < devilWords.length; i++) {
+                if (message.content.includes(devilWords[i])) {
+                    message.reply('You rang?');
+                    break;
+                }
+            }
+        }
+    }
     private checkIfCommand(message: Message) {
         if (message.content.includes('-')) {
             return true;
@@ -35,6 +46,7 @@ export class MessageService {
     async handleNewMessage(message: Message) {
         if (message.type === 'DEFAULT') {
             this.newMessageLogService.create(message);
+            this.beSatan(message);
             if (this.checkIfCommand(message)) {
                 this.commandService.handleCommand(message);
             }
