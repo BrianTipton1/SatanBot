@@ -3,7 +3,8 @@ import EditedMessageLog from './editedMessageLog';
 
 const EditedMessageSchema = new Schema<EditedMessageLog>({
     userName: { type: String, required: true },
-    originalMessage: { type: String, required: true },
+    originalMessage: { type: String, required: false },
+    messageId: { type: String, required: true },
     updatedMessage: { type: String, required: true },
     createdDate: { type: Date, required: true },
     updatedDate: { type: Date, required: true },

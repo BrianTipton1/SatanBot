@@ -13,6 +13,7 @@ export class DeletedMessageLogService {
     public create(message: Message): void {
         const log: DeletedMessageLog = {
             userName: message.author.username,
+            messageId: message.id,
             userId: message.author.id,
             channelId: message.channelId,
             channelName: message.guild.channels.cache.get(message.channelId).name,

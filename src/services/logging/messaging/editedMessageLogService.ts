@@ -15,6 +15,7 @@ export class EditedMessageLogService {
             const log: EditedMessageLog = {
                 userName: oldMessage.author.username,
                 userId: oldMessage.author.id,
+                messageId: oldMessage.id,
                 channelId: oldMessage.channelId,
                 channelName: oldMessage.guild.channels.cache.get(oldMessage.channelId).name,
                 originalMessage: oldMessage.content,

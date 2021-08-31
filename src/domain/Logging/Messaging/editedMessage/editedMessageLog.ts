@@ -1,6 +1,7 @@
 export default interface EditedMessageLog {
     userName: string;
-    originalMessage: string;
+    originalMessage?: string;
+    messageId: string;
     updatedMessage: string;
     createdDate: Date;
     updatedDate: Date;
