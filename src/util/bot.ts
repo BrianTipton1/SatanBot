@@ -1,9 +1,19 @@
-import { Client, GuildMember, Message, VoiceState } from 'discord.js';
+import {
+    ActivityFlags,
+    ActivityOptions,
+    Client,
+    GuildMember,
+    Message,
+    PresenceData,
+    PresenceStatusData,
+    VoiceState,
+} from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { MessageService } from '../services/message/messageService';
 import { ChannelService } from '../services/channel/channelService';
 import { MemberService } from '../services/member/memberService';
+import { ActivityTypes } from 'discord.js/typings/enums';
 
 @injectable()
 export class Bot {
@@ -64,6 +74,12 @@ export class Bot {
         });
         this.client.on('guildMemberRemove', (member: GuildMember) => {
             this.memberService.handleMemberStatus(member);
+        });
+        this.client.on('ready', () => {
+            const opt: ActivityOptions = {
+                type: 2,
+            };
+            this.client.user.setActivity('The Devil Went Down to Georgia', opt);
         });
         return this.client.login(this.token);
     }
