@@ -79,7 +79,7 @@ export class Bot {
             const opt: ActivityOptions = {
                 type: 2,
             };
-            this.client.user.setActivity('Runnin’ With the Devil', opt);
+            this.client.user.setActivity('The Devil Went Down to Georgia', opt);
         });
         return this.client.login(this.token);
     }
