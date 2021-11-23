@@ -1,4 +1,4 @@
-import { ChannelManager, Message, StartThreadOptions, ThreadChannel, ThreadMember } from 'discord.js';
+import { Message, StartThreadOptions, ThreadChannel, ThreadMember } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import TierList from '../../domain/tierlist/tierList';
 import TierListRepository from '../../repositories/tierlist/tierListRepository';
@@ -6,9 +6,7 @@ import { TYPES } from '../../types';
 import { Document } from 'mongoose';
 import TierItem from '../../domain/tierlist/tierItem';
 import Table = require('cli-table');
-import { Channel } from 'diagnostics_channel';
-import { time } from 'console';
-import { SSL_OP_EPHEMERAL_RSA } from 'constants';
+import { OptionValues } from 'commander';
 
 @injectable()
 export class TierListService {
@@ -17,33 +15,13 @@ export class TierListService {
         this.tierListRepo = tierListRepo;
     }
 
-    private getThreadName(message: Message): string {
-        const splits: Array<string> = message.content.split(' ');
-        let threadName: string = '';
-        for (let i = 0; i < splits.length; i++) {
-            if (!splits[i].includes('-')) {
-                threadName += splits[i] + ' ';
-            }
-        }
-        if (threadName.length !== 0) {
-            return threadName.charAt(0).toUpperCase() + threadName.slice(1).slice(0, -1);
-        }
-        return null;
-    }
-    async startTierList(message: Message) {
-        if (!(message.content.includes('-num') || message.content.includes('-alpha'))) {
-            message.reply(
-                `Hey, <@${message.author.id}> to create a Tier List please provide ` +
-                    `a type option.\nOptions are -alpha or -num\nExample command: '-tierlist -alpha BestBurgers'`,
-            );
-            return;
-        }
-        if (message.content.includes('-alpha') && !message.content.includes('-num')) {
-            const threadName = this.getThreadName(message);
+    async startTierList(message: Message, options: OptionValues) {
+        if (options.tierlist === 'alpha') {
+            const threadName = options.name;
             const threadOptions: StartThreadOptions = {
-                name: `${this.getThreadName(message)} tier list`,
+                name: `${threadName} tier list`,
                 autoArchiveDuration: 1440,
-                reason: 'aplha',
+                reason: 'alpha',
             };
             const thread = await message.startThread(threadOptions);
             this.createTierList(message, 'alpha', threadName, thread.id);
@@ -55,10 +33,10 @@ export class TierListService {
                     'To print the current standings type -print',
             );
         }
-        if (message.content.includes('-num') && !message.content.includes('-alpha')) {
-            const threadName = this.getThreadName(message);
+        if (options.tierlist == 'num') {
+            const threadName = options.name;
             const threadOptions: StartThreadOptions = {
-                name: `${this.getThreadName(message)} tier list`,
+                name: `${threadName} tier list`,
                 autoArchiveDuration: 1440,
                 reason: 'numeric',
             };

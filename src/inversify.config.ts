@@ -21,6 +21,8 @@ import { MemberService } from './services/member/memberService';
 import { TierListService } from './services/tierlist/tierlistService';
 import TierListRepository from './repositories/tierlist/tierListRepository';
 import { CommandService } from './services/command/commandService';
+import { AsciiService } from './services/ascii/asciiService';
+import AsciiRepository from './repositories/Ascii/asciiRepository';
 
 let container = new Container();
 
@@ -67,4 +69,6 @@ container.bind<VoiceTimeRepository>(TYPES.VoiceTimeRepository).to(VoiceTimeRepos
 container.bind<VoiceStatusRepository>(TYPES.VoiceStatusRepository).to(VoiceStatusRepository).inSingletonScope();
 container.bind<MemberStatusRepository>(TYPES.MemberStatusRepository).to(MemberStatusRepository).inSingletonScope();
 container.bind<TierListRepository>(TYPES.TierListRepository).to(TierListRepository).inSingletonScope();
+container.bind<AsciiService>(TYPES.AsciiService).to(AsciiService).inSingletonScope();
+container.bind<AsciiRepository>(TYPES.AsciiRepository).to(AsciiRepository).inSingletonScope();
 export default container;
