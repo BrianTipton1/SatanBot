@@ -56,6 +56,14 @@ export default class MongoBase<TItem> {
     protected async getMostTenRecent(query: FilterQuery<TItem>): Promise<EnforceDocument<TItem, {}>[]> {
         return await this._model.find(query).limit(10).sort({ $natural: -1 });
     }
+    /**
+     * Returns all documents in a collection
+     * @returns Promise<EnforceDocument<TItem, {}>[]>
+     */
+    protected async getAll() {
+        const filter = {};
+        return await this._model.find(filter);
+    }
 
     /**
      *
