@@ -23,6 +23,8 @@ import TierListRepository from './repositories/tierlist/tierListRepository';
 import { CommandService } from './services/command/commandService';
 import { AsciiService } from './services/ascii/asciiService';
 import AsciiRepository from './repositories/Ascii/asciiRepository';
+import MusicRepository from './repositories/Music/musicRepository';
+import { MusicService } from './services/music/MusicService';
 
 let container = new Container();
 
@@ -71,4 +73,6 @@ container.bind<MemberStatusRepository>(TYPES.MemberStatusRepository).to(MemberSt
 container.bind<TierListRepository>(TYPES.TierListRepository).to(TierListRepository).inSingletonScope();
 container.bind<AsciiService>(TYPES.AsciiService).to(AsciiService).inSingletonScope();
 container.bind<AsciiRepository>(TYPES.AsciiRepository).to(AsciiRepository).inSingletonScope();
+container.bind<MusicRepository>(TYPES.MusicRepository).to(MusicRepository).inSingletonScope();
+container.bind<MusicService>(TYPES.MusicService).to(MusicService).inSingletonScope();
 export default container;

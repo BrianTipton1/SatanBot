@@ -1,4 +1,3 @@
-
 export const TYPES = {
     Bot: Symbol('Bot'),
     Client: Symbol('Client'),
@@ -23,5 +22,7 @@ export const TYPES = {
     TierListRepository: Symbol('TierListRepository'),
     CommandService: Symbol('CommandService'),
     AsciiService: Symbol('AsciiService'),
-    AsciiRepository: Symbol('AsciiRepository')
+    AsciiRepository: Symbol('AsciiRepository'),
+    MusicRepository: Symbol('MusicRepository'),
+    MusicService: Symbol('MusicService'),
 };
