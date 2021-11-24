@@ -25,6 +25,7 @@ export class MusicService {
     private trackedShards: Map<number, Set<Snowflake>>;
     private trackedClients: Set<Client>;
     private player: AudioPlayer;
+    private currentlyPlaying: boolean;
     private connection: VoiceConnection;
 
     constructor(@inject(TYPES.MusicRepository) musicRepo: MusicRepository) {
@@ -32,6 +33,7 @@ export class MusicService {
         this.trackedShards = new Map<number, Set<Snowflake>>();
         this.trackedClients = new Set<Client>();
         this.adapters = new Map<Snowflake, DiscordGatewayAdapterLibraryMethods>();
+        this.currentlyPlaying = false;
     }
     private async CheckIfPlaylistExists(name: string): Promise<boolean> {
         const resp = await this.musicRepo.GetPlaylist(name);
@@ -108,12 +110,6 @@ export class MusicService {
         }
         guilds.add(guild.id);
     }
-    private CheckIfInVoice(message: Message): boolean {
-        if (!message.member.voice.channel) {
-            return false;
-        }
-        return true;
-    }
     private async GetNextQue() {
         const resp = await this.musicRepo.GetPlaylist('QUE');
         if (resp[0].songs.length === 0) {
@@ -140,16 +136,23 @@ export class MusicService {
     private stop() {
         if (this.player !== undefined) {
             this.player.stop();
+            this.ClearQue();
             this.connection.disconnect();
         }
     }
     private async PlayNextInQue(url: string, connection: VoiceConnection, message: Message) {
         try {
-            const stream = ytdl(url, { filter: 'audioonly', highWaterMark: 1 << 25, dlChunkSize: 0 });
+            const stream = ytdl(url, { filter: 'audioonly', highWaterMark: 1 << 25, dlChunkSize: 0 }).on(
+                'error',
+                (e) => {
+                    message.reply(e + ` while playing ${url}`);
+                },
+            );
             const player = createAudioPlayer();
             this.player = player;
             this.connection = connection;
             player.play(createAudioResource(stream));
+            this.currentlyPlaying = true;
             connection.subscribe(player).player.on('stateChange', async (old, n) => {
                 if (n.status === AudioPlayerStatus.Idle) {
                     if (await this.CheckIfPlaylistExists('QUE')) {
@@ -157,6 +160,7 @@ export class MusicService {
                         const next = await this.GetNextQue();
                         if (next === false) {
                             connection.disconnect();
+                            this.currentlyPlaying = false;
                             return;
                         }
                         await this.PlayNextInQue(next, connection, message);
@@ -180,6 +184,40 @@ export class MusicService {
             return;
         }
     }
+    private async GetPlaylist(name: string) {
+        const resp = await this.musicRepo.GetPlaylist(name);
+        if (resp.length !== 0) {
+            return resp[0].songs;
+        }
+        return false;
+    }
+    private async PlayPlayList(connection: VoiceConnection, message: Message, songs: Array<string>, index: number) {
+        try {
+            const stream = ytdl(songs[index], { filter: 'audioonly', highWaterMark: 1 << 25, dlChunkSize: 0 }).on(
+                'error',
+                (e) => {
+                    message.reply(e + ` while playing ${songs[index]}`);
+                },
+            );
+            const player = createAudioPlayer();
+            this.player = player;
+            this.connection = connection;
+            player.play(createAudioResource(stream));
+            this.currentlyPlaying = true;
+            connection.subscribe(player).player.on('stateChange', async (old, n) => {
+                if (n.status === AudioPlayerStatus.Idle) {
+                    if (index === songs.length - 1) {
+                        connection.disconnect();
+                        this.currentlyPlaying = false;
+                        return;
+                    }
+                    this.PlayPlayList(connection, message, songs, index + 1);
+                }
+            });
+        } catch (error) {
+            message.reply(`There was an error playing ${songs[index]}`);
+        }
+    }
     private async checkUrl(url: string, message: Message) {
         if (await ytdl.validateURL(url)) {
             return true;
@@ -187,41 +225,138 @@ export class MusicService {
         message.reply('The URL provided cannot be played');
         return false;
     }
-
+    private async ClearQue() {
+        const resp = await this.musicRepo.GetPlaylist('QUE');
+        if (resp.length !== 0) {
+            let que = resp[0];
+            let newQue: Music = {
+                name: que.name,
+                userName: que.userName,
+                userId: que.userId,
+                songs: que.songs,
+                date: que.date,
+            };
+            newQue.songs = new Array();
+            await this.musicRepo.UpdateLogById(que._id, newQue);
+        }
+    }
     public async HandleMusic(message: Message, options: OptionValues) {
         if (options.play !== undefined && (await this.checkUrl(options.play, message))) {
+            if (
+                !this.currentlyPlaying &&
+                (await this.CheckIfPlaylistExists('QUE')) &&
+                !(await this.CheckIfQueEmpty())
+            ) {
+                await this.deleteQue(message);
+                const connection = await this.connect(message);
+                this.StartQue(message, options);
+                this.PlayNextInQue(options.play, connection, message);
+                return true;
+            }
             if ((await this.CheckIfPlaylistExists('QUE')) && (await this.CheckIfQueEmpty())) {
                 const connection = await this.connect(message);
                 this.AddToQue(message, options);
                 this.PlayNextInQue(options.play, connection, message);
-                return;
+                return true;
             }
             if (!(await this.CheckIfPlaylistExists('QUE'))) {
                 const connection = await this.connect(message);
                 this.StartQue(message, options);
                 this.PlayNextInQue(options.play, connection, message);
-                return;
+                return true;
             }
             if (!(await this.CheckIfQueEmpty())) {
                 this.AddToQue(message, options);
-                return;
+                return true;
             }
-            return;
         }
         if (options.music !== undefined) {
             if (options.music === 'pause') {
-                this.pause();
+                try {
+                    this.pause();
+                    return true;
+                } catch (error) {
+                    message.reply('Nothing playing to pause');
+                    return false;
+                }
             }
-            if (options.music === 'play') {
-                this.unpause();
+            if (options.music === 'unpause') {
+                try {
+                    this.unpause();
+                    return true;
+                } catch (error) {
+                    message.reply('Nothing playing to unpause');
+                    return false;
+                }
             }
             if (options.music === 'stop') {
-                this.stop();
+                try {
+                    this.stop();
+                    this.currentlyPlaying = false;
+                    return true;
+                } catch (error) {
+                    message.reply('No music to stop playing');
+                    return false;
+                }
             }
             if (options.music === 'skip') {
-                this.skip();
+                try {
+                    this.skip();
+                    return true;
+                } catch (error) {
+                    message.reply('No music playing to skip');
+                    return false;
+                }
+            }
+            if (options.name !== undefined) {
+                if (options.music === 'play') {
+                    const resp = await this.GetPlaylist(options.name);
+                    if (resp !== false) {
+                        if (this.currentlyPlaying) {
+                            message.reply('Already playing music, stop the current playlist or que and try again');
+                            return false;
+                        }
+                        const connection = await this.connect(message);
+                        this.PlayPlayList(connection, message, resp, 0);
+                        return true;
+                    } else {
+                        message.reply('No playlist with that name to play');
+                        return false;
+                    }
+                }
+                if (options.music === 'add' && options.value !== undefined) {
+                    this.AddToPlaylist(message, options);
+                    return true;
+                }
+                if (options.music === 'create') {
+                    await this.startPlayList(message, options);
+                    return true;
+                }
+                if (options.music === 'delete') {
+                    await this.deletePlaylist(message, options);
+                    return true;
+                }
+                if (options.music === 'add' && options.value !== undefined) {
+                    await this.AddToPlaylist(message, options);
+                    return true;
+                }
             }
         }
+        return false;
+    }
+    private async deletePlaylist(message: Message, options: OptionValues) {
+        if (!(await this.CheckIfPlaylistExists(options.name))) {
+            message.reply('There is no playlist with that name to delete');
+            return;
+        }
+        await this.musicRepo.deleteByName(options.name);
+    }
+    private async deleteQue(message: Message) {
+        if (!(await this.CheckIfPlaylistExists('QUE'))) {
+            message.reply('No que to delete');
+            return;
+        }
+        await this.musicRepo.deleteByName('QUE');
     }
     private async deleteFromQue() {
         const resp = await this.musicRepo.GetPlaylist('QUE');
@@ -236,6 +371,23 @@ export class MusicService {
             };
             newQue.songs.shift();
             await this.musicRepo.UpdateLogById(que._id, newQue);
+        }
+    }
+    private async AddToPlaylist(message: Message, options: OptionValues) {
+        const resp = await this.musicRepo.GetPlaylist(options.name);
+        if (resp.length !== 0) {
+            let que = resp[0];
+            let newQue: Music = {
+                name: que.name,
+                userName: que.userName,
+                userId: que.userId,
+                songs: que.songs,
+                date: que.date,
+            };
+            newQue.songs.push(options.value);
+            await this.musicRepo.UpdateLogById(que._id, newQue);
+        } else {
+            message.reply('Something went wrong adding to que:(, please try again');
         }
     }
     private async AddToQue(message: Message, options: OptionValues) {
@@ -267,13 +419,13 @@ export class MusicService {
     }
 
     private async startPlayList(message: Message, options: OptionValues) {
-        if (this.CheckIfPlaylistExists(options.name)) {
+        if (await this.CheckIfPlaylistExists(options.name)) {
             message.reply(
-                'Sorry a playlist with this name already exists!\nYou can add songs to this playlist or create a new one with a different name!',
+                'A playlist with this name already exists!\nYou can add songs to this playlist or create a new one with a different name!',
             );
             return false;
         }
-        if (options.play !== undefined && options.play === 'create' && options.name !== undefined) {
+        if (options.music !== undefined && options.music === 'create' && options.name !== undefined) {
             const playlist: Music = {
                 name: options.name,
                 userName: message.author.username,
