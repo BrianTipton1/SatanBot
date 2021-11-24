@@ -53,6 +53,10 @@ export default class MusicRepository extends MongoBase<Music> {
         const query: MusicQueryByName = {
             name: name,
         };
-        await this.delete(query);
+        try {
+            await this.delete(query);
+        } catch (error) {
+            throw new Error('Could not connect to mongo: ' + error);
+        }
     }
 }
