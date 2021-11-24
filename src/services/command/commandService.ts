@@ -5,20 +5,24 @@ import { AsciiService } from '../ascii/asciiService';
 import { TierListService } from '../tierlist/tierlistService';
 import { Argument, Command, CommanderError, Option, OptionValues } from 'commander';
 import { MusicService } from '../music/MusicService';
+import { RollService } from '../roll/rollService';
 @injectable()
 export class CommandService {
     private tierListService: TierListService;
     private asciiService: AsciiService;
     private program: Command;
     private musicService: MusicService;
+    private rollService: RollService;
     constructor(
         @inject(TYPES.TierListService) tierListService: TierListService,
         @inject(TYPES.AsciiService) asciiService: AsciiService,
         @inject(TYPES.MusicService) musicService: MusicService,
+        @inject(TYPES.RollService) rollService: RollService,
     ) {
         this.tierListService = tierListService;
         this.asciiService = asciiService;
         this.musicService = musicService;
+        this.rollService = rollService;
     }
     private NameCommand() {
         const name = new Option('-n, --name <Name of Item>');
@@ -48,6 +52,15 @@ export class CommandService {
         Example '--play http://someyoutubesong.com)'",
         );
         this.program.addOption(play);
+    }
+    private rollCommand() {
+        const roll = new Option(
+            '-r, --roll [69-420]',
+            "\n\
+        Can supply a low and high or no value to roll from 0-100\
+        Example: '--roll 69-420'",
+        ).default('default');
+        this.program.addOption(roll);
     }
     private ArtCommand() {
         const art = new Option('-v, --value <Some value to be saved>');
@@ -82,6 +95,7 @@ export class CommandService {
         this.ArtCommand();
         this.PlayCommand();
         this.MusicCommand();
+        this.rollCommand();
     }
     public async handleCommand(message: Message) {
         this.HydrateCommands(message);
@@ -106,6 +120,13 @@ export class CommandService {
         }
         if (options.ascii !== undefined && this.CheckOps(options)) {
             await this.asciiService.handleAsciiCommand(message, options);
+            return;
+        }
+        if (options.roll !== undefined) {
+            if (!this.rollService.handleRoll(message, options)) {
+                message.reply(this.program.helpInformation());
+                return;
+            }
             return;
         }
     }

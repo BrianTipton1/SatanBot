@@ -25,4 +25,5 @@ export const TYPES = {
     AsciiRepository: Symbol('AsciiRepository'),
     MusicRepository: Symbol('MusicRepository'),
     MusicService: Symbol('MusicService'),
+    RollService: Symbol('RollService'),
 };
