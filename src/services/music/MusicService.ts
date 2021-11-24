@@ -1,8 +1,19 @@
-import { DiscordGatewayAdapterCreator, DiscordGatewayAdapterLibraryMethods, joinVoiceChannel } from '@discordjs/voice';
+import {
+    AudioPlayer,
+    AudioPlayerStatus,
+    createAudioPlayer,
+    createAudioResource,
+    DiscordGatewayAdapterCreator,
+    DiscordGatewayAdapterLibraryMethods,
+    joinVoiceChannel,
+    VoiceConnection,
+} from '@discordjs/voice';
+import { Document } from 'mongoose';
 import { OptionValues } from 'commander';
 import { GatewayVoiceServerUpdateDispatchData, GatewayVoiceStateUpdateDispatchData } from 'discord-api-types';
 import { Client, Constants, Guild, Message, Snowflake, StageChannel, VoiceChannel } from 'discord.js';
 import { inject, injectable } from 'inversify';
+import ytdl from 'ytdl-core';
 import Music from '../../domain/music/music';
 import MusicRepository from '../../repositories/Music/musicRepository';
 import { TYPES } from '../../types';
@@ -13,6 +24,8 @@ export class MusicService {
     private adapters: Map<Snowflake, DiscordGatewayAdapterLibraryMethods>;
     private trackedShards: Map<number, Set<Snowflake>>;
     private trackedClients: Set<Client>;
+    private player: AudioPlayer;
+    private connection: VoiceConnection;
 
     constructor(@inject(TYPES.MusicRepository) musicRepo: MusicRepository) {
         this.musicRepo = musicRepo;
@@ -27,11 +40,13 @@ export class MusicService {
         }
         return true;
     }
-    private CheckIfInVoice(message: Message): boolean {
-        if (!message.member.voice.channel) {
-            return false;
+    private async CheckIfQueEmpty() {
+        const resp = await this.musicRepo.GetPlaylist('QUE');
+        if (resp[0].songs.length === 0) {
+            await this.musicRepo.deleteByName('QUE');
+            return true;
         }
-        return true;
+        return false;
     }
     private SendNotInChannel(message: Message): void {
         message.reply('Sorry you have to be in a voice channel to play, pause or stop music');
@@ -93,34 +108,119 @@ export class MusicService {
         }
         guilds.add(guild.id);
     }
+    private CheckIfInVoice(message: Message): boolean {
+        if (!message.member.voice.channel) {
+            return false;
+        }
+        return true;
+    }
+    private async GetNextQue() {
+        const resp = await this.musicRepo.GetPlaylist('QUE');
+        if (resp[0].songs.length === 0) {
+            this.musicRepo.deleteByName('QUE');
+            return false;
+        }
+        return resp[0].songs[0];
+    }
+    private pause() {
+        if (this.player !== undefined) {
+            this.player.pause();
+        }
+    }
+    private unpause() {
+        if (this.player !== undefined) {
+            this.player.unpause();
+        }
+    }
+    private skip() {
+        if (this.player !== undefined) {
+            this.player.stop();
+        }
+    }
+    private stop() {
+        if (this.player !== undefined) {
+            this.player.stop();
+            this.connection.disconnect();
+        }
+    }
+    private async PlayNextInQue(url: string, connection: VoiceConnection, message: Message) {
+        try {
+            const stream = ytdl(url, { filter: 'audioonly', highWaterMark: 1 << 25, dlChunkSize: 0 });
+            const player = createAudioPlayer();
+            this.player = player;
+            this.connection = connection;
+            player.play(createAudioResource(stream));
+            connection.subscribe(player).player.on('stateChange', async (old, n) => {
+                if (n.status === AudioPlayerStatus.Idle) {
+                    if (await this.CheckIfPlaylistExists('QUE')) {
+                        await this.deleteFromQue();
+                        const next = await this.GetNextQue();
+                        if (next === false) {
+                            connection.disconnect();
+                            return;
+                        }
+                        await this.PlayNextInQue(next, connection, message);
+                    }
+                }
+            });
+        } catch (error) {
+            message.reply(`There was an error playing ${url}`);
+        }
+    }
+    private async connect(message: Message): Promise<VoiceConnection> {
+        const channel = await this.getChannel(message);
+        if (channel) {
+            let connection = await joinVoiceChannel({
+                channelId: channel.id,
+                guildId: channel.guild.id,
+                adapterCreator: this.createDiscordJSAdapter(channel as VoiceChannel),
+            });
+            return connection;
+        } else {
+            return;
+        }
+    }
+    private async checkUrl(url: string, message: Message) {
+        if (await ytdl.validateURL(url)) {
+            return true;
+        }
+        message.reply('The URL provided cannot be played');
+        return false;
+    }
 
     public async HandleMusic(message: Message, options: OptionValues) {
-        if (options.play !== undefined) {
-            if (this.CheckIfPlaylistExists('QUE')) {
+        if (options.play !== undefined && (await this.checkUrl(options.play, message))) {
+            if ((await this.CheckIfPlaylistExists('QUE')) && (await this.CheckIfQueEmpty())) {
+                const connection = await this.connect(message);
                 this.AddToQue(message, options);
-            } else {
+                this.PlayNextInQue(options.play, connection, message);
+                return;
+            }
+            if (!(await this.CheckIfPlaylistExists('QUE'))) {
+                const connection = await this.connect(message);
                 this.StartQue(message, options);
+                this.PlayNextInQue(options.play, connection, message);
+                return;
+            }
+            if (!(await this.CheckIfQueEmpty())) {
+                this.AddToQue(message, options);
+                return;
             }
             return;
         }
         if (options.music !== undefined) {
-            if (options.music === 'play') {
-                const channel = await this.getChannel(message);
-                if (channel) {
-                    let connection = await joinVoiceChannel({
-                        channelId: channel.id,
-                        guildId: channel.guild.id,
-                        adapterCreator: this.createDiscordJSAdapter(channel as VoiceChannel),
-                    });
-                    try {
-                        await connection.on;
-                    } catch (error) {}
-                } else {
-                    return;
-                }
+            if (options.music === 'pause') {
+                this.pause();
             }
-        } else {
-            message.reply('Something went wrong :(');
+            if (options.music === 'play') {
+                this.unpause();
+            }
+            if (options.music === 'stop') {
+                this.stop();
+            }
+            if (options.music === 'skip') {
+                this.skip();
+            }
         }
     }
     private async deleteFromQue() {
@@ -152,7 +252,7 @@ export class MusicService {
             newQue.songs.push(options.play);
             await this.musicRepo.UpdateLogById(que._id, newQue);
         } else {
-            message.reply('Something went wrong :(, please try again');
+            message.reply('Something went wrong adding to que:(, please try again');
         }
     }
     private StartQue(message: Message, options: OptionValues) {

@@ -1,4 +1,4 @@
-import { Document, UpdateWriteOpResult } from 'mongoose';
+import { Document, ObjectId, Types, UpdateWriteOpResult } from 'mongoose';
 import { injectable } from 'inversify';
 import Music from '../../domain/music/music';
 import MongoBase from '../mongoBase';
@@ -39,14 +39,20 @@ export default class MusicRepository extends MongoBase<Music> {
      * @param log Updated Log Object
      * @returns  Promise<UpdateWriteOpResult>
      */
-    public async UpdateLogById(id: string, log: Music): Promise<UpdateWriteOpResult> {
+    public async UpdateLogById(id: Types.ObjectId, log: Music): Promise<UpdateWriteOpResult> {
         const query: MusicQueryById = {
-            _id: this.toObjectId(id),
+            _id: id,
         };
         try {
             return await this.update(query, log);
         } catch (error) {
             throw new Error('Could not connect to mongo: ' + error);
         }
+    }
+    public async deleteByName(name: string) {
+        const query: MusicQueryByName = {
+            name: name,
+        };
+        await this.delete(query);
     }
 }

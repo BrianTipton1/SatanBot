@@ -26,7 +26,7 @@ export class CommandService {
     }
     private MusicCommand() {
         const music = new Option(
-            '-m, --music',
+            '-m, --music <action>',
             '\n\
         stop -(Stops music playing in channel)\n\
         play -(Either plays paused music or can be supplied a name to playlist)\n\
@@ -34,7 +34,8 @@ export class CommandService {
         create - (Create a playlist witha name parameter)\n\
         delete - (Delete a playlist with a name parameter)\n\
         clear - (Clear the non playlist que)\n\
-        add - (Add music to a playlist with a name and value parameter)\n',
+        add - (Add music to a playlist with a name and value parameter)\n\
+        skip - (skips the current song and starts playing the next in que or next in playlist)\n',
         );
         music.choices(['stop', 'skip', 'pause', 'play', 'create', 'delete', 'add']);
         this.program.addOption(music);
@@ -95,7 +96,7 @@ export class CommandService {
         }
         let options = this.program.opts();
         if (options.play !== undefined || options.music !== undefined) {
-            this.musicService.HandleMusic(message, options);
+            await this.musicService.HandleMusic(message, options);
         }
         if (options.tierlist !== undefined && options.name !== undefined && this.CheckOps(options)) {
             this.tierListService.startTierList(message, options);
