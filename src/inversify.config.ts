@@ -26,6 +26,7 @@ import AsciiRepository from './repositories/Ascii/asciiRepository';
 import MusicRepository from './repositories/Music/musicRepository';
 import { MusicService } from './services/music/MusicService';
 import { RollService } from './services/roll/rollService';
+import { FlipService } from './services/flip/flipService';
 
 let container = new Container();
 
@@ -77,4 +78,5 @@ container.bind<AsciiRepository>(TYPES.AsciiRepository).to(AsciiRepository).inSin
 container.bind<MusicRepository>(TYPES.MusicRepository).to(MusicRepository).inSingletonScope();
 container.bind<MusicService>(TYPES.MusicService).to(MusicService).inSingletonScope();
 container.bind<RollService>(TYPES.RollService).to(RollService).inSingletonScope();
+container.bind<FlipService>(TYPES.FlipService).to(FlipService).inSingletonScope();
 export default container;
