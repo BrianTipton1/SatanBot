@@ -6,6 +6,7 @@ import { TierListService } from '../tierlist/tierlistService';
 import { Argument, Command, CommanderError, Option, OptionValues } from 'commander';
 import { MusicService } from '../music/MusicService';
 import { RollService } from '../roll/rollService';
+import { FlipService } from '../flip/flipService';
 @injectable()
 export class CommandService {
     private tierListService: TierListService;
@@ -13,16 +14,19 @@ export class CommandService {
     private program: Command;
     private musicService: MusicService;
     private rollService: RollService;
+    private flipService: FlipService;
     constructor(
         @inject(TYPES.TierListService) tierListService: TierListService,
         @inject(TYPES.AsciiService) asciiService: AsciiService,
         @inject(TYPES.MusicService) musicService: MusicService,
         @inject(TYPES.RollService) rollService: RollService,
+        @inject(TYPES.FlipService) flipService: FlipService,
     ) {
         this.tierListService = tierListService;
         this.asciiService = asciiService;
         this.musicService = musicService;
         this.rollService = rollService;
+        this.flipService = flipService;
     }
     private NameCommand() {
         const name = new Option('-n, --name <Name of Item>');
@@ -58,9 +62,14 @@ export class CommandService {
             '-r, --roll [69-420]',
             "\n\
         Can supply a low and high or no value to roll from 0-100\
-        Example: '--roll 69-420'",
+        Example: '--roll 69-420'\n",
         ).default('default');
         this.program.addOption(roll);
+    }
+    private flipCommand() {
+        const flip = new Option('-f, --flip', '\n\
+        Flips a coin');
+        this.program.addOption(flip);
     }
     private ArtCommand() {
         const art = new Option('-v, --value <Some value to be saved>');
@@ -96,6 +105,7 @@ export class CommandService {
         this.PlayCommand();
         this.MusicCommand();
         this.rollCommand();
+        this.flipCommand();
     }
     public async handleCommand(message: Message) {
         this.HydrateCommands(message);
@@ -106,7 +116,7 @@ export class CommandService {
         try {
             this.program.parse(message.content.split(' '), { from: 'user' });
         } catch (e) {
-            message.reply(this.program.helpInformation());
+            await message.reply(this.program.helpInformation());
         }
         let options = this.program.opts();
         if (options.play !== undefined || options.music !== undefined) {
@@ -122,9 +132,13 @@ export class CommandService {
             await this.asciiService.handleAsciiCommand(message, options);
             return;
         }
+        if (options.flip !== undefined) {
+            await message.reply('\n*' + this.flipService.FlipCoin() + '*');
+            return;
+        }
         if (options.roll !== undefined) {
-            if (!this.rollService.handleRoll(message, options)) {
-                message.reply(this.program.helpInformation());
+            if (!(await this.rollService.handleRoll(message, options))) {
+                await message.reply(this.program.helpInformation());
                 return;
             }
             return;

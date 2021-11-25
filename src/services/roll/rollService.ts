@@ -17,11 +17,11 @@ export class RollService {
         }
         return Math.floor(Math.random() * (parseInt(nums[1]) - parseInt(nums[0]) + 1) + parseInt(nums[0]));
     }
-    public handleRoll(message: Message, options: OptionValues) {
+    public async handleRoll(message: Message, options: OptionValues) {
         if (!this.parseRoll(options.roll)) {
             return false;
         }
-        message.reply(`<@${message.author.id}> rolled ` + this.parseRoll(options.roll).toString() + '!');
+        await message.reply(`<@${message.author.id}> rolled ` + this.parseRoll(options.roll).toString() + '!');
         return true;
     }
 }
