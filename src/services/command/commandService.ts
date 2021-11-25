@@ -61,7 +61,7 @@ export class CommandService {
         const roll = new Option(
             '-r, --roll [69-420]',
             "\n\
-        Can supply a low and high or no value to roll from 0-100\
+        Can supply a low and high or no value to roll from 0-100\n\
         Example: '--roll 69-420'\n",
         ).default('default');
         this.program.addOption(roll);
@@ -79,7 +79,7 @@ export class CommandService {
         const ascii = new Option(
             '-a, --ascii <Action to preform>',
             "Need to specifiy a name with the -n flag and art with -v flag.\n\
-            Example: '-a post -n Chungus -v INSERT-ASCII-HERE\n",
+            Example: '-a save -n chungus -v INSERT-ASCII-HERE\n",
         );
         ascii.choices(['save', 'delete', 'post', 'list']);
         this.program.addOption(ascii);
@@ -117,6 +117,7 @@ export class CommandService {
             this.program.parse(message.content.split(' '), { from: 'user' });
         } catch (e) {
             await message.reply(this.program.helpInformation());
+            return;
         }
         let options = this.program.opts();
         if (options.play !== undefined || options.music !== undefined) {
@@ -136,7 +137,7 @@ export class CommandService {
             await message.reply('\n*' + this.flipService.FlipCoin() + '*');
             return;
         }
-        if (options.roll !== undefined) {
+        if (options.roll !== undefined && !this.CheckIfMoreThanOneCommand(options)) {
             if (!(await this.rollService.handleRoll(message, options))) {
                 await message.reply(this.program.helpInformation());
                 return;
@@ -150,5 +151,14 @@ export class CommandService {
         } else {
             return true;
         }
+    }
+    private CheckIfMoreThanOneCommand(option: OptionValues) {
+        const str = JSON.stringify(option);
+        const obj = JSON.parse(str) as Object;
+        const keys = Object.keys(obj);
+        if (keys.length > 1) {
+            return true;
+        }
+        return false;
     }
 }

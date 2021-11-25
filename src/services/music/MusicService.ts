@@ -171,7 +171,7 @@ export class MusicService {
             message.reply(`There was an error playing ${url}`);
         }
     }
-    private async connect(message: Message): Promise<VoiceConnection> {
+    private async connect(message: Message): Promise<VoiceConnection | false> {
         const channel = await this.getChannel(message);
         if (channel) {
             let connection = await joinVoiceChannel({
@@ -181,7 +181,7 @@ export class MusicService {
             });
             return connection;
         } else {
-            return;
+            return false;
         }
     }
     private async GetPlaylist(name: string) {
@@ -250,20 +250,29 @@ export class MusicService {
                 await this.deleteQue(message);
                 const connection = await this.connect(message);
                 this.StartQue(message, options);
-                this.PlayNextInQue(options.play, connection, message);
-                return true;
+                if (connection) {
+                    this.PlayNextInQue(options.play, connection, message);
+                    return true;
+                }
+                return false;
             }
             if ((await this.CheckIfPlaylistExists('QUE')) && (await this.CheckIfQueEmpty())) {
                 const connection = await this.connect(message);
                 this.AddToQue(message, options);
-                this.PlayNextInQue(options.play, connection, message);
-                return true;
+                if (connection) {
+                    this.PlayNextInQue(options.play, connection, message);
+                    return true;
+                }
+                return false;
             }
             if (!(await this.CheckIfPlaylistExists('QUE'))) {
                 const connection = await this.connect(message);
                 this.StartQue(message, options);
-                this.PlayNextInQue(options.play, connection, message);
-                return true;
+                if (connection) {
+                    this.PlayNextInQue(options.play, connection, message);
+                    return true;
+                }
+                return false;
             }
             if (!(await this.CheckIfQueEmpty())) {
                 this.AddToQue(message, options);
@@ -317,8 +326,11 @@ export class MusicService {
                             return false;
                         }
                         const connection = await this.connect(message);
-                        this.PlayPlayList(connection, message, resp, 0);
-                        return true;
+                        if (connection) {
+                            this.PlayPlayList(connection, message, resp, 0);
+                            return true;
+                        }
+                        return false;
                     } else {
                         message.reply('No playlist with that name to play');
                         return false;
