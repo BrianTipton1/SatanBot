@@ -56,7 +56,7 @@ docker-compose up -d
     -   Can be used to just play songs individually in a que style or can save playlists for later
     -   Two different commands
         -   Play
-            -   Used to play songs in a que style
+            -   Used to play songs in a que style\
                 Example:
             ```bash
             -p https://www.youtube.com/watch?v=dQw4w9WgXcQ
@@ -164,25 +164,25 @@ docker-compose up -d
 
     Example Commands:
 
-    > Posts the art saved under the name bigChungus
+    -   Posts the art saved under the name bigChungus
 
     ```bash
     -a post -n bigChungus
     ```
 
-    > Saves the art specified after the -v flag as bigChungus in the databse
+    -   Saves the art specified after the -v flag as bigChungus in the databse
 
     ```bash
     -a save -n bigChungus -v CHUNGUSART
     ```
 
-    > Deletes the art from the database under the name bigChungus
+    -   Deletes the art from the database under the name bigChungus
 
     ```bash
     -a delete -n bigChungus
     ```
 
-    > Lists all the art saved in the database
+    -   Lists all the art saved in the database
 
     ```bash
     -a list
