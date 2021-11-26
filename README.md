@@ -87,7 +87,7 @@ Currently all of the commands DevBot can do
 
 Options:
   -a, --ascii <Action to preform>       Need to specifiy a name with the -n flag and art with -v flag.
-              Example: '-a save -n chungus -v INSERT-ASCII-HERE
+              Example: '-a save -n chungus -v INSERT-ASCII-HERE'
    (choices: "save", "delete", "post", "list")
   -t, --tierlist <Tierlist Type>        Need to specifiy a name with the -n flag.
               Example '-t alpha -n Hotdogs'
