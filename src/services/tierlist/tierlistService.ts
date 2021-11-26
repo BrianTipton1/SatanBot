@@ -260,7 +260,7 @@ export class TierListService {
                     }
                 }
                 const onestr = letteritems.join(' ');
-                if (tiers[tier] === 's') {
+                if (tiers[tier].toLowerCase() === 's') {
                     table.unshift({ [`${tiers[tier].toUpperCase()}`]: onestr });
                 } else {
                     table.push({ [`${tiers[tier].toUpperCase()}`]: onestr });

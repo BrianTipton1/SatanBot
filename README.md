@@ -52,14 +52,142 @@ docker-compose up -d
 ## Features
 
 -   Music
+
     -   Can be used to just play songs individually in a que style or can save playlists for later
+    -   Two different commands
+        -   Play
+            -   Used to play songs in a que style
+                Example:
+            ```bash
+            -p https://www.youtube.com/watch?v=dQw4w9WgXcQ
+            ```
+            -   This will either start playing the audio or add it to the end of the que if already playing
+            -   If playing a playlist this command will stop it and start playing the new audio immediately
+        -   Music
+            -   Options
+                -   Skip current song
+                    -   This will skip the next song in a que or playlist
+                    -   If it is the last song the bot will leave the voice channel\
+                        Example:
+                    ```bash
+                    -m skip
+                    ```
+                -   Stop playing music
+                    -   Bot will leave voice channel and delete que if needed\
+                        Example:
+                    ```bash
+                    -m stop
+                    ```
+                -   Pause music
+                    -   Just pauses the currently playing audio\
+                        Example:
+                    ```bash
+                    -m pause
+                    ```
+                -   Unpause Music
+                    -   Just unpauses the audio\
+                        Example:
+                    ```bash
+                    -m unpause
+                    ```
+                -   Create a playlist\
+                    Example:
+                    `bash -m create -n myCoolPlaylist `
+                -   Add song to a playlist\
+                     Example:
+                    ```bash
+                    -m add -n myCoolPlaylist -v https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                    ```
+                -   Play an already saved playlist\
+                     Example:
+                    ```bash
+                    -m play -n myCoolPlaylist
+                    ```
+                -   Delete a playlist\
+                     Example:
+                    ```bash
+                    -m play -n myCoolPlaylist
+                    ```
+
 -   Tierlists
+
     -   Displayed using ascii grids
     -   Options
+
         -   Classic
+
+            -   Example:
+
+            ```bash
+            -t alpha -n Fries
+            ```
+
+            -   This Creates an alphabetical or 'classic' style tierlist with the name 'Fries'
+            -   Adding to tierlist
+                -   Must be done in the tierlist thread created by the bot
+            -   Example:
+
+            ```bash
+            -B Carls/Hardees
+            -A Pen Station
+            -F Burger King
+            -A Mcdonalds
+            -S Freddys
+            -S Arbys
+            ```
+
+            -   Result Below \
+                ![alt text](https://github.com/BrianTipton1/SatanBot/tree/master/READMEAssets/alphalist.png)
+
         -   Numerical
+            -   Example:
+            ```bash
+            -t num -n Fries
+            ```
+            -   This creates a numerical tierlist with the name 'Fries'
+            -   Adding to the tierlist
+                -   Must be done in the tierlist thread created by the bot
+            -   Example:
+            ```bash
+            -1 Arbys
+            -2 Freddys
+            -3 Mcdonalds
+            -4 Steak N Shake
+            -5 Pen Station
+            ```
+            -   Result below \
+                ![alt text](https://github.com/BrianTipton1/SatanBot/tree/master/READMEAssets/numtlist.png)
+
 -   Ascii Art
+
     -   Allows you to save and repost commonly used ascii art for later
+
+    Example Commands:
+
+    > Posts the art saved under the name bigChungus
+
+    ```bash
+    -a post -n bigChungus
+    ```
+
+    > Saves the art specified after the -v flag as bigChungus in the databse
+
+    ```bash
+    -a save -n bigChungus -v CHUNGUSART
+    ```
+
+    > Deletes the art from the database under the name bigChungus
+
+    ```bash
+    -a delete -n bigChungus
+    ```
+
+    > Lists all the art saved in the database
+
+    ```bash
+    -a list
+    ```
+
 -   Flip
     -   Flip a coin
 -   Roll
@@ -76,14 +204,15 @@ docker-compose up -d
             -   Entering a voice channel
             -   Leaving a voice channel
             -   The time spent in the voice channel
--   Welcome Message - Sends a welcome message to the person who joins the server
+-   Welcome Message
+    -   Sends a welcome message to the person who joins the server
 
 > Help command below
 
 ```bash
 Usage: SatanBot [options]
 
-Currently all of the commands DevBot can do
+Currently all of the commands SatanBot can do
 
 Options:
   -a, --ascii <Action to preform>       Need to specifiy a name with the -n flag and art with -v flag.
@@ -126,6 +255,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 -   Find 403 bug in music service (I think it's from ytdl-core failing to retrieve the stream but I can't seem to catch it)
 -   Refactor music, command and tierlist service
 -   Allow for custom greetings saved to database
+-   Log users who are new, banned or left the server
 -   Ability to ban, see message or voicechannel logs by messaging bot
 
 ## License
