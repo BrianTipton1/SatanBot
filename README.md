@@ -156,7 +156,7 @@ docker-compose up -d
             -5 Pen Station
             ```
             -   Result below \
-                ![alt text](https://raw.githubusercontent.com/BrianTipton1/SatanBot/master/READMEAssets/numtlist1.png)
+                ![alt text](https://raw.githubusercontent.com/BrianTipton1/SatanBot/master/READMEAssets/numtlist2.png)
 
 -   Ascii Art
 
