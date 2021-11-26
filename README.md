@@ -137,7 +137,7 @@ docker-compose up -d
             ```
 
             -   Result Below \
-                ![alt text](https://github.com/BrianTipton1/SatanBot/tree/master/READMEAssets/alphalist.png)
+                ![alt text](https://raw.githubusercontent.com/BrianTipton1/SatanBot/master/READMEAssets/alphalist.png)
 
         -   Numerical
             -   Example:
@@ -156,7 +156,7 @@ docker-compose up -d
             -5 Pen Station
             ```
             -   Result below \
-                ![alt text](https://github.com/BrianTipton1/SatanBot/tree/master/READMEAssets/numtlist.png)
+                ![alt text](https://raw.githubusercontent.com/BrianTipton1/SatanBot/master/READMEAssets/numtlist.png)
 
 -   Ascii Art
 
