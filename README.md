@@ -76,8 +76,45 @@ docker-compose up -d
             -   Entering a voice channel
             -   Leaving a voice channel
             -   The time spent in the voice channel
--   Welcome Message
-    -   Sends a welcome message to the person who joins the server
+-   Welcome Message - Sends a welcome message to the person who joins the server
+
+> Help command below
+
+```bash
+Usage: SatanBot [options]
+
+Currently all of the commands DevBot can do
+
+Options:
+  -a, --ascii <Action to preform>       Need to specifiy a name with the -n flag and art with -v flag.
+              Example: '-a save -n chungus -v INSERT-ASCII-HERE
+   (choices: "save", "delete", "post", "list")
+  -t, --tierlist <Tierlist Type>        Need to specifiy a name with the -n flag.
+              Example '-t alpha -n Hotdogs'
+   (choices: "alpha", "num")
+  -n, --name <Name of Item>
+  -v, --value <Some value to be saved>
+  -p, --play <Url to youtube video>
+          Used to just que music w/o playlist
+          Example '--play http://someyoutubesong.com/)'
+  -m, --music <action>
+          stop -(Stops music playing in channel)
+          play -(Start Playing a playlist with a name parameter)
+          unpause -(Unpause currntly paused music)
+          pause -(Pauses Currently Playing Music)
+          create - (Create a playlist witha name parameter)
+          delete - (Delete a playlist with a name parameter)
+          add - (Add music to a playlist with a name and value parameter)
+          skip - (skips the current song and starts playing the next in que or next in playlist)
+   (choices: "unpause", "stop", "skip", "pause", "play", "create", "delete", "add")
+  -r, --roll [69-420]
+          Can supply a low and high or no value to roll from 0-100
+          Example: '--roll 69-420'
+   (default: "default")
+  -f, --flip
+          Flips a coin
+  -h, --help                            display help for command
+```
 
 ## Contributing
 
