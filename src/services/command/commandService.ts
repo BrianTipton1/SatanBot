@@ -137,7 +137,11 @@ export class CommandService {
             await message.reply('\n*' + this.flipService.FlipCoin() + '*');
             return;
         }
-        if (options.roll !== undefined && !this.CheckIfMoreThanOneCommand(options)) {
+        if (
+            options.roll !== undefined &&
+            !this.CheckIfMoreThanOneCommand(options) &&
+            !this.CheckForOnlyDashes(message)
+        ) {
             if (!(await this.rollService.handleRoll(message, options))) {
                 await message.reply(this.program.helpInformation());
                 return;
@@ -157,6 +161,15 @@ export class CommandService {
         const obj = JSON.parse(str) as Object;
         const keys = Object.keys(obj);
         if (keys.length > 1) {
+            return true;
+        }
+        return false;
+    }
+    private CheckForOnlyDashes(message: Message) {
+        let str = message.content.replace(/-/g, '');
+        str = str.replace(/\s+/g, '');
+
+        if (str === '') {
             return true;
         }
         return false;

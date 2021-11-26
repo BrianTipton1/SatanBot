@@ -38,7 +38,10 @@ export class MessageService {
         }
     }
     private checkIfCommand(message: Message) {
-        if (message.content.includes('-')) {
+        if (message.content.length === 0) {
+            return false;
+        }
+        if (message.content.at(0) === '-') {
             return true;
         }
         return false;
